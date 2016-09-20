@@ -11,7 +11,33 @@ def knn(training_data, training_labels, test_data, test_labels):
 	test_data = test_data.astype('float')
 	knn_labels = []
 
+	data_size = training_labels.size
+	input_size = test_labels.size
+
+	print np.version.version
+
+	t_data_sqsum = np.square(training_data).sum(t_data_sq, axis=1)
+	# Extend array
+	a_sq = np.broadcast_to(t_data_sq_sum, (input_size, data_size))
+
+	input_data_sq = np.square(test_data)
+	print input_data_sq.shape
+	i_data_sq_sum = np.sum(input_data_sq, axis=1)
+	print i_data_sq_sum.shape
+	i_data_sq_sum = np.expand_dims(i_data_sq_sum, axis=0)
+	print i_data_sq_sum.shape
+	b_sq = np.repeat(i_data_sq_sum, data_size).reshape(input_size, data_size)
+	print "B square shape: ", b_sq.shape
+	print b_sq
+	
+	print "xy shape: ",  test_data.shape, training_data.T.shape
+	xy = np.dot(test_data, training_data.T)
+	print xy.shape
+	sys.exit(0)
+
+	eu_dist = t_data_sq + input_data_sq.T - 2*xy
 	for y in range (0, test_labels.size):
+		
 		diff = np.linalg.norm(training_data - test_data[y], axis=1)
 		#print min(diff)
 		#print np.argmin(diff)
@@ -53,10 +79,12 @@ ocr = loadmat('ocr.mat')
 #print ocr['data'].shape
 #training_size = [1000, 2000, 4000, 8000]
 training_size = [2000]
+iteration = 1
 for i in range(len(training_size)):
-	for j in range(0, 10):
+	for j in range(0, iteration):
 		print j, "th run with size ", training_size[i]
 		sel = random.sample(xrange(60000), training_size[i])
 	#	prototype_sel(ocr['data'][sel], ocr['labels'][sel], training_size)
-		knn_labels = knn(ocr['data'][sel], ocr['labels'][sel], ocr['testdata'], ocr['testlabels'])
-		err_rate(ocr['testlabels'], knn_labels)
+		input_labels = ocr['testlabels']
+		knn_labels = knn(ocr['data'][sel], ocr['labels'][sel], ocr['testdata'], input_labels)
+		err_rate(input_labels, knn_labels)
