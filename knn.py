@@ -10,27 +10,25 @@ import time
 def knn(training_data, training_labels, test_data, test_labels):
 	training_data = training_data.astype('float')
 	test_data = test_data.astype('float')
-	knn_labels = []
 
 	data_size = training_labels.size
 	input_size = test_labels.size
 
+	# Get sum of squared values for each rows
 	t_data_sq_sum = np.sum(np.square(training_data), axis=1)
 	# Extend array
 	a_sq = np.broadcast_to(t_data_sq_sum, (input_size, data_size))
 
+	# Get sum of squared values for each rows
 	i_data_sq_sum = np.sum(np.square(test_data), axis=1)
 	i_data_sq_sum = np.expand_dims(i_data_sq_sum, axis=0)
+	# Extend array
 	b_sq = np.repeat(i_data_sq_sum, data_size).reshape(input_size, data_size)
 	
-	start = time.time()
-	xy = np.dot(test_data, training_data.T)
-	end = time.time()
-	print "elapsed time for dot", end - start
+	ab = np.dot(test_data, training_data.T)
 
-	eu_dist = a_sq + b_sq - 2*xy
-	print eu_dist
-	print np.argmin(eu_dist, axis = 1)
+	# (a - b)^2 = a^2 + b^2 -2ab
+	eu_dist = a_sq + b_sq - 2*ab
 
 	return training_labels[np.argmin(eu_dist, axis = 1)]
 
@@ -39,7 +37,7 @@ def err_rate(test_labels,  knn_labels):
 	for y in range (0, test_labels.size):
 		if test_labels[y] != knn_labels[y]:
 			err += 1
-	print err
+	#print err
 	return err
 
 def prototype_sel(training_data, training_labels, m):
@@ -66,14 +64,17 @@ def prototype_sel(training_data, training_labels, m):
 
 ocr = loadmat('ocr.mat')
 #print ocr['data'].shape
-#training_size = [1000, 2000, 4000, 8000]
-training_size = [2000]
-iteration = 1
+training_size = [1000, 2000, 4000, 8000]
+iteration = 10
 for i in range(len(training_size)):
+	err = []
 	for j in range(0, iteration):
-		print j, "th run with size ", training_size[i]
+		#print j, "th run with size ", training_size[i]
 		sel = random.sample(xrange(60000), training_size[i])
 	#	prototype_sel(ocr['data'][sel], ocr['labels'][sel], training_size)
 		input_labels = ocr['testlabels']
 		knn_labels = knn(ocr['data'][sel], ocr['labels'][sel], ocr['testdata'], input_labels)
-		err_rate(input_labels, knn_labels)
+		err.append(err_rate(input_labels, knn_labels))
+	# At the end of iteratioin, print avg and stdev
+	div = input_labels.size/100	
+	print training_size[i], np.mean(err)/div, np.std(err)/div
