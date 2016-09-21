@@ -5,6 +5,7 @@ import numpy as np
 import sys
 import matplotlib.pyplot as plt
 from matplotlib import cm 
+import time
 
 def knn(training_data, training_labels, test_data, test_labels):
 	training_data = training_data.astype('float')
@@ -14,36 +15,24 @@ def knn(training_data, training_labels, test_data, test_labels):
 	data_size = training_labels.size
 	input_size = test_labels.size
 
-	print np.version.version
-
-	t_data_sqsum = np.square(training_data).sum(t_data_sq, axis=1)
+	t_data_sq_sum = np.sum(np.square(training_data), axis=1)
 	# Extend array
 	a_sq = np.broadcast_to(t_data_sq_sum, (input_size, data_size))
 
-	input_data_sq = np.square(test_data)
-	print input_data_sq.shape
-	i_data_sq_sum = np.sum(input_data_sq, axis=1)
-	print i_data_sq_sum.shape
+	i_data_sq_sum = np.sum(np.square(test_data), axis=1)
 	i_data_sq_sum = np.expand_dims(i_data_sq_sum, axis=0)
-	print i_data_sq_sum.shape
 	b_sq = np.repeat(i_data_sq_sum, data_size).reshape(input_size, data_size)
-	print "B square shape: ", b_sq.shape
-	print b_sq
 	
-	print "xy shape: ",  test_data.shape, training_data.T.shape
+	start = time.time()
 	xy = np.dot(test_data, training_data.T)
-	print xy.shape
-	sys.exit(0)
+	end = time.time()
+	print "elapsed time for dot", end - start
 
-	eu_dist = t_data_sq + input_data_sq.T - 2*xy
-	for y in range (0, test_labels.size):
-		
-		diff = np.linalg.norm(training_data - test_data[y], axis=1)
-		#print min(diff)
-		#print np.argmin(diff)
-		knn_labels.append(training_labels[np.argmin(diff)])
+	eu_dist = a_sq + b_sq - 2*xy
+	print eu_dist
+	print np.argmin(eu_dist, axis = 1)
 
-	return knn_labels
+	return training_labels[np.argmin(eu_dist, axis = 1)]
 
 def err_rate(test_labels,  knn_labels):
 	err = 0
