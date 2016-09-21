@@ -1,0 +1,8 @@
+set terminal x11
+set boxwidth 0.8
+set style fill solid
+set yrange [0:*]
+unset key
+set ylabel "Error rate (%)"
+set xlabel "Training data size"
+plot "input.dat" using 0:2:xtic(1) with boxes, '' using 0:2:3 with yerrorbars lc rgb 'black' pt 1 lw 2
