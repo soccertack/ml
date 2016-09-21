@@ -51,29 +51,29 @@ def prototype_sel(training_data, training_labels, m):
 		partitioned_data[idx].append(training_data[d])
 		partitioned_label[idx] += 1
 
-	print partitioned_label[0]
+	#print partitioned_label[0]
 
 	# Get average for each label
 	for i in range (0, 10):
 		label_mean[i] = np.mean(partitioned_data[i], axis=0)
 	
-	sel = random.sample(xrange(60000), 2*m)
-	# Get kNN from 2x input
-
-	return
+	return np.array(label_mean), np.array([0,1,2,3,4,5,6,7,8,9])
 
 ocr = loadmat('ocr.mat')
 #print ocr['data'].shape
 training_size = [1000, 2000, 4000, 8000]
 iteration = 10
+use_proto = 0
 for i in range(len(training_size)):
 	err = []
 	for j in range(0, iteration):
-		#print j, "th run with size ", training_size[i]
 		sel = random.sample(xrange(60000), training_size[i])
-	#	prototype_sel(ocr['data'][sel], ocr['labels'][sel], training_size)
+		t_data, t_label = ocr['data'][sel], ocr['labels'][sel]
+
+		if use_proto == 1:
+			t_data, t_label = prototype_sel(ocr['data'], ocr['labels'], training_size)
 		input_labels = ocr['testlabels']
-		knn_labels = knn(ocr['data'][sel], ocr['labels'][sel], ocr['testdata'], input_labels)
+		knn_labels = knn(t_data, t_label, ocr['testdata'], input_labels)
 		err.append(err_rate(input_labels, knn_labels))
 	# At the end of iteratioin, print avg and stdev
 	div = input_labels.size/100	
