@@ -1,0 +1,251 @@
+\documentclass[11pt]{article}
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage{listings}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{textcomp}
+\usepackage{graphicx}
+\lstset{%
+  basicstyle=\small\ttfamily,
+  mathescape=true,
+  upquote=true,
+}
+
+\usepackage{amsmath,amsbsy,amsfonts,amssymb,amsthm,color,dsfont,mleftright,commath}
+
+\def\ddefloop#1{\ifx\ddefloop#1\else\ddef{#1}\expandafter\ddefloop\fi}
+
+% \bbA, \bbB, ...
+\def\ddef#1{\expandafter\def\csname bb#1\endcsname{\ensuremath{\mathbb{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+
+% \cA, \cB, ...
+\def\ddef#1{\expandafter\def\csname c#1\endcsname{\ensuremath{\mathcal{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+
+% \vA, \vB, ..., \va, \vb, ...
+\def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\ddefloop
+
+% \valpha, \vbeta, ...,  \vGamma, \vDelta, ...,
+\def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{\csname #1\endcsname}}}}
+\ddefloop {alpha}{beta}{gamma}{delta}{epsilon}{varepsilon}{zeta}{eta}{theta}{vartheta}{iota}{kappa}{lambda}{mu}{nu}{xi}{pi}{varpi}{rho}{varrho}{sigma}{varsigma}{tau}{upsilon}{phi}{varphi}{chi}{psi}{omega}{Gamma}{Delta}{Theta}{Lambda}{Xi}{Pi}{Sigma}{varSigma}{Upsilon}{Phi}{Psi}{Omega}{ell}\ddefloop
+
+\newcommand\braces[1]{\{#1\}}
+
+\theoremstyle{definition}
+\newtheorem{problem}{Problem}
+\newenvironment{solution}{\noindent\emph{Solution.}}{\hfill$\square$}
+
+%-------------------------------------------------------------------------------
+
+\title{COMS 4771 Fall 2016 Homework 1 \\ Due Wednesday, September 21}
+\author{Jin Tack Lim, jl4312
+  }
+\date{%
+  }
+
+\begin{document}
+\maketitle
+
+\newpage
+
+%-------------------------------------------------------------------------------
+
+\begin{problem}[Nearest neighbors; 20 points]
+  \label{prob:nn}
+  Download the OCR image data set \texttt{ocr.mat} from Courseworks,
+
+asdf~\cite{gnuplot-so}
+\begin {figure}
+    \includegraphics[width=0.32\textwidth]{figures/fig1}
+\end {figure}
+
+
+  and load it into MATLAB:
+  \lstset{language=Matlab}
+  \begin{lstlisting}
+    load('ocr.mat')
+  \end{lstlisting}
+  Or Python:
+  \lstset{language=Python}
+  \begin{lstlisting}
+    from scipy.io import loadmat
+    ocr = loadmat('ocr.mat')
+  \end{lstlisting}
+
+  The unlabeled training data (i.e., feature vectors) are contained in
+  a matrix called \texttt{data} (one point per row), and the
+  corresponding labels are in a vector called \texttt{labels}.
+  The test feature vectors and labels are in, respectively,
+  \texttt{testdata} and \texttt{testlabels}.
+  In MATLAB, you can view an image (say, the first one) in the
+  training data with the following commands:
+  \lstset{language=Matlab}
+  \begin{lstlisting}
+    imagesc(reshape(data(1,:),28,28)');
+  \end{lstlisting}
+  If the colors are too jarring for you, try the following:
+  \begin{lstlisting}
+    colormap(1-gray);
+  \end{lstlisting}
+  In Python, to view the first image, try the following (ideally, from
+  IPython or Jupyter Notebook):
+  \lstset{language=Python}
+  \begin{lstlisting}
+    import matplotlib.pyplot as plt
+    from matplotlib import cm
+    plt.imshow(ocr['data'][0].reshape((28,28)), cmap=cm.gray_r)
+    plt.show()
+  \end{lstlisting}
+
+  Write a function that implements the $1$-nearest neighbor classifier
+  with Euclidean distance.
+  Your function should take as input a matrix of training feature
+  vectors \texttt{X} and a vector of the corresponding labels
+  \texttt{Y}, as well as a matrix of test feature vectors
+  \texttt{test}.
+  The output should be a vector of predicted labels \texttt{preds} for
+  all the test points.
+  Naturally, you should not use (or look at the source code for) any library
+  functions for computing pairwise distsances or nearest neighbor queries.
+  If in doubt about what is okay to use, just ask.
+  Note that for efficiency, you should use matrix/vector operations (rather
+  than, say, a bunch of for-loops).\footnote{%
+    \url{http://www.mathworks.com/help/matlab/matlab_prog/vectorization.html}%
+  }
+
+  Instead of using your 1-NN code directly with \texttt{data} and
+  \texttt{labels} as the training data, do the following.
+  For each value $n \in \braces{1000,2000,4000,8000}$,
+  \begin{itemize}
+    \item
+      Draw $n$ random points from \texttt{data}, together with their
+      corresponding labels.
+      In MATLAB, use \lstinline{sel = randsample(60000,$n$)} to pick the
+      $n$ random indices, and \texttt{data(sel,:)} and
+      \lstinline{labels(sel)} to select the examples; in Python, use
+      \lstinline{sel = random.sample(xrange(60000),$n$)} (after
+      \lstinline{import random}),
+      \lstinline{ocr['data'][sel].astype('float')}, and
+      \lstinline{ocr['labels'][sel]}.
+
+    \item
+      Use these $n$ points as the training data and \texttt{testdata}
+      as the test points, and compute the test error rate of the
+      $1$-NN classifier.
+
+  \end{itemize}
+  A plot of the error rate (on the y-axis) as a function of $n$ (on
+  the x-axis) is called a \emph{learning curve}.
+  We get an estimate of this curve by using the test error rate in
+  place of the (true) error rate.
+
+  Repeat the (random) process described above ten times, independently.
+  Produce an estimate of the learning curve plot using the average of
+  these test error rates (that is, averaging over ten repetitions).
+  Add error bars to your plot that extend to one standard deviation
+  above and below the means.
+  Ensure the plot axes are properly labeled.
+
+  What to submit:
+  (1) learning curve plot, (2) source code (in a separate file).
+\end{problem}
+
+\begin{solution}
+% TODO Put solution here.
+\end{solution}
+
+\newpage
+
+%-------------------------------------------------------------------------------
+
+\begin{problem}[Prototype selection; 20 points]
+  Prototype selection is a method for speeding-up nearest neighbor search that
+  replaces the training data with a smaller subset of \emph{prototypes} (which
+  could be data points themselves).
+  For simplicity, assume that 1-NN is used with Euclidean distance.
+  So a prototype selection method simply takes as input:
+  \begin{itemize}
+    \item
+      the training data $\{ (\vx_i,y_i) \}_{i=1}^n$ from $\bbR^d \times
+      \{0,1,\dotsc,9\}$ (say), and
+
+    \item
+      a positive integer $m$;
+
+  \end{itemize}
+  it should return $m$ labeled pairs $\{(\tilde\vx_i,\tilde y_i)\}_{i=1}^m$,
+  each from $\bbR^d \times \{0,1,\dotsc,9\}$.
+
+  Design a method for choosing prototypes, where the goal is for the 1-NN
+  classifier based on the prototypes to have good test accuracy.
+  Implement your algorithm; use it to select prototypes for the OCR data
+  set, and evaluate the test error rate of the 1-NN classifier based on the
+  selected prototypes.
+  You should use the whole training data set as input (i.e., all $n=60000$ data
+  points), but vary the number of selected prototypes $m$ in the set $\{ 1000,
+  2000, 4000, 8000 \}$.
+  If your procedure is randomized, repeat it at least ten times (for each $m$)
+  to properly assess its performance.
+
+  What to submit:
+  \begin{enumerate}
+    \item
+      A brief description of your method (in words).
+
+    \item
+      Concise and unambiguous pseudocode for your algorithm.
+
+    \item
+      A table of the test error rates for the different values of $m$ you try.
+      (Report averages and standard deviations if your procedure is randomized.)
+
+    \item
+      Source code (in a separate file).
+
+  \end{enumerate}
+
+\end{problem}
+
+\begin{solution}
+% TODO Put solution here.
+\end{solution}
+
+\newpage
+
+%-------------------------------------------------------------------------------
+
+\begin{problem}[Probability; 10 points]
+  Suppose you have an urn containing $100$ colored balls.
+  Each ball is painted with one of five possible colors from the color
+  set $\cC := \braces{ \text{red}, \text{orange}, \text{yellow},
+  \text{green}, \text{blue} }$.
+  For each $c \in \cC$, let $n_c$ denote the number of balls in the
+  urn with color $c$.
+  \begin{enumerate}
+    \item[(a)]
+      Suppose you pick two balls uniformly at random \emph{with replacement}
+      from the urn.
+      What is the probability that they have different colors?
+      Briefly explain your answer.
+
+    \item[(b)]
+      Suppose you want to maximize the probability from part (a).
+      You are allowed to paint all of the balls in the urn, each with any color
+      from $\cC$.
+      How many balls in the urn would you paint with each color in $\cC$?
+      Briefly explain your answer.
+
+  \end{enumerate}
+
+\end{problem}
+
+\begin{solution}
+% TODO Put solution here.
+\end{solution}
+
+\bibliographystyle{plain}
+\bibliography{references}
+\end{document}
+
