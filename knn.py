@@ -65,6 +65,36 @@ def prototype_sel(training_data, training_labels, m):
 	'''	
 
 	input_size = [m/100*5, 100, m/10, m/100*10, m/100*15, m/10, m/100*10, m/10, m/100*20 - 100, m/100*10]
+	'''
+1000 11.179 0.360678527223
+2000 8.264 0.24129649811
+4000 6.288 0.157594416145
+8000 4.934 0.183423008371
+	'''
+
+	input_size = [m/100*5, 100, m/10, m/100*10, m/100*15, m/10, m/100*8, m/10, m/100*20 - 100, m/100*12]
+	input_size = [m/100*5, m/100*2, m/10, m/100*13, m/100*14, m/10, m/100*4, m/10, m/100*20, m/100*12]
+	'''
+1000 10.748 0.365918023606
+2000 8.163 0.192252438216
+4000 6.325 0.23290556026
+8000 5.057 0.18831091312
+	'''
+	input_size = [m/100*4, m/100*2, m/100*11, m/100*13, m/100*14, m/10, m/100*4, m/10, m/100*20, m/100*12]
+	'''
+1000 10.574 0.478773432847
+2000 8.059 0.386094548006
+4000 6.26 0.128840987267
+8000 4.923 0.207704116473
+	'''
+	input_size = [m/100*4, m/1000*15, m/1000*115, m/100*13, m/100*14, m/10, m/100*4, m/10, m/100*20, m/100*12]
+	'''
+1000 10.667 0.559590028503
+2000 7.999 0.392796384912
+4000 6.286 0.181504820873
+8000 4.925 0.172872785597
+	'''
+
 
 	acc = 0
 	selected_labels = np.array(selected_labels)
@@ -102,16 +132,18 @@ for i in range(len(training_size)):
 		knn_labels = knn(t_data, t_label, ocr['testdata'], input_labels)
 		err_array = err_rate(input_labels, knn_labels)
 		err_array_total[j] = err_array
-		print err_array
-		print sum(err_array)
+	#	print err_array
+	#	print sum(err_array)
 		err.append(sum(err_array))
 	# At the end of iteratioin, print avg and stdev
 	div = input_labels.size/100	
 	result[i] = str(training_size[i]) + " " + str(np.mean(err)/div) + " " + str(np.std(err)/div)
 	err_array_total = np.array(err_array_total)
 	err_array_total = err_array_total.astype('float')
-	print err_array_total
+	#print err_array_total
+	print training_size[i]
 	print np.sum(err_array_total, axis = 0)
+	print np.sum(err_array_total)
 	np.set_printoptions(formatter={'float': '{: 0.1f}'.format})
 	print np.sum(err_array_total, axis = 0)/np.sum(err)*100
 	#print np.sum(err, axis = 0)
