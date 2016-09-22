@@ -5,6 +5,7 @@
 \usepackage{hyperref}
 \usepackage{textcomp}
 \usepackage{graphicx}
+\usepackage{underscore}
 \lstset{%
   basicstyle=\small\ttfamily,
   mathescape=true,
@@ -224,7 +225,49 @@ Figure~\ref{fig:lc} shows the learning curve plot~\cite{gnuplot-so} with 1000, 2
 \end{problem}
 
 \begin{solution}
-% TODO Put solution here.
+
+1. There are two observations.
+
+ 1) The err rate for each label is different.
+For example, error rate for label 1 is pretty low compared to others probably due to a simple shape of letter 1.
+
+
+ 2) As we can see from the result of problem 1, the more training set is given, the accuracy gets better.
+
+Based on those observations, my method is to sample different number of points for each label depending on error rates of the label respectively. In other words, sample small number of points for a label with low error rate, and sample large number of points for a label with high error rate. 
+The rationale behind the idea is that sampling small number of points for a low-error-rate label does not increase error rate much due to a simple shape (i.e. not much variation). On the other hand, sampling a large number of points for a high-error-rate label will decrease an error rate much based on the observation with different training size in problem1.
+
+2.
+\begin{verbatim}
+prototype_data prototype_select(training_data, training_label, prototype_size)
+{
+    p_data[0:9] = partition training_data based on its label(0~9)
+	
+    // sample size is predefined by looking at error rate of each labels
+    // and doing trial-and-error to find reasonable accurate increasement
+    // I used [4, 1.5, 11.5, 13, 14, 10, 4, 10, 20, 12] * prototype_size/100
+    sample_size[0:9] = [s0, s1, … , s9] where sum(s0:s9) = prototype_size
+	
+    for i in 0 to 9
+        prototype_data += sample(p_data[i], sample_size[i])
+	
+    return prototype_data
+}
+\end{verbatim}
+
+3.
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|r|r|r|}
+\hline
+\textbf{training size} & \multicolumn{1}{c|}{\textbf{error rate (\%)}} & \multicolumn{1}{l|}{\textbf{\begin{tabular}[c]{@{}l@{}}accuracy\\ improvement (\%)\end{tabular}}} & \multicolumn{1}{c|}{\textbf{stdev}} \\ \hline
+1000                   & 10.934                                        & 4.54                                                                                              & 0.415                               \\ \hline
+2000                   & 8.001                                         & 8.72                                                                                              & 0.236                               \\ \hline
+4000                   & 6.169                                         & 12.20                                                                                             & 0.236                               \\ \hline
+8000                   & 4.937                                         & 12.70                                                                                             & 0.127                               \\ \hline
+\end{tabular}
+\caption{Test error rates}
+\end{table}
 \end{solution}
 
 \newpage
@@ -257,7 +300,30 @@ Figure~\ref{fig:lc} shows the learning curve plot~\cite{gnuplot-so} with 1000, 2
 \end{problem}
 
 \begin{solution}
-% TODO Put solution here.
+
+(a) $1 - (1/n_{red})^2 - (1/n_{orange})^2 - (1/n_{yellow})^2 - (1/n_{green})^2 - (1/n_{blue})^2$
+
+The probability that two balls have different colors is a complementary set of the probability that two balls have the same color.
+
+
+(b) 20 balls for each color
+
+Intuitively, when the colors of balls are evenly distributed, the probability that two balls have different colors is maximized.
+
+To prove it formally, we can start from the simplied case: there are 40 balls
+and two colors. Then compare the probability when painting 20 balls for each
+color and all other cases.
+
+When painting 20 balls for each, the probability is $1 - (1/20)^2 - (1/20)^2$
+
+All other cases can be represented by painting (20-k) in one color and (20+k)
+in the other color where $0<k<20$. The probability is $1 - (1/(20-k))^2 -
+(1/(20+k))^2$
+
+By doing subtraction, we can easily prove that the former is always greater
+than the latter with any $k$ value in the range. We can also easily extend this 
+to cases with more than two colors.
+
 \end{solution}
 
 \bibliographystyle{plain}
