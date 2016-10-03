@@ -67,6 +67,20 @@ def get_ccdist_log(ccdist):
 
 	return ccdist_log
 
+def get_class(x, prior, ccdist):
+	
+	x = x.todense()
+	x_con = np.vstack((x, 1-x))
+
+	max_val = float('-inf')
+	max_idx = 0
+	for y in range (len(prior)):
+		z = prior[y] + np.sum(np.inner(ccdist[y], x_con))
+		if (z > max_val):
+			max_val = z
+			max_idx = y
+	return max_idx
+
 news = loadmat('news.mat')
 # partitioned_data[i] contains data with label i
 partitioned_data = partition(news['testdata'], news['testlabels'])
@@ -78,5 +92,6 @@ ccdist = get_ccdist(partitioned_data)
 class_prior_log = np.log(class_prior)
 ccdist_log = get_ccdist_log(ccdist)
 
+get_class(news['data'][0], class_prior_log, ccdist_log)
 sys.exit(0)
 
