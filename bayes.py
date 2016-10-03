@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from __future__ import division
 from scipy.io import loadmat
 import random
 import numpy as np
@@ -27,6 +28,19 @@ def partition(t_data, t_labels):
 		partitioned_data[idx].append(t_data[d])
 
 	return partitioned_data
+
+
+def get_class_prior(partitioned_data):
+	class_size = len(partitioned_data)
+	data_size = sum(len(x) for x in partitioned_data)
+
+	class_prior = []
+	for y in range (class_size):
+		class_prior.append(len(partitioned_data[y])/data_size)
+			
+	print class_prior
+	print sum(class_prior)
+	return
 '''
 	print len(partitioned_data[0])
 	print [len(x) for x in partitioned_data]
@@ -46,7 +60,12 @@ def partition(t_data, t_labels):
 '''
 
 news = loadmat('news.mat')
+# partitioned_data[i] contains data with label i
 partitioned_data = partition(news['testdata'], news['testlabels'])
+print "class size is ", len(partitioned_data)
+
+class_prior = get_class_prior(partitioned_data)
+
 
 sys.exit(0)
 
