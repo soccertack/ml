@@ -13,6 +13,9 @@ def partition(t_data, t_labels):
 	t_size = t_labels.size
 	class_size = np.unique(t_labels).size
 
+	t_size = 707
+	class_size = 2
+
 	partitioned_data = [[] for i in range(class_size)]
 	param = [0 for i in range(class_size)]
 
@@ -33,8 +36,7 @@ def get_class_prior(partitioned_data):
 	for y in range (class_size):
 		class_prior.append(len(partitioned_data[y])/data_size)
 			
-	print class_prior
-	print sum(class_prior)
+	print "class prior", class_prior
 	return class_prior
 
 def get_ccdist(partitioned_data):
@@ -50,8 +52,20 @@ def get_ccdist(partitioned_data):
 		denominator = (len(partitioned_data[y]) +2)
 		ccdist.append(numerator/denominator)
 
-	print ccdist
+	ccdist = np.array(ccdist)
 	return ccdist
+
+def get_ccdist_log(ccdist):
+
+	ccdist_con = []
+	for y in range (len(ccdist)):
+		ccdist_rev = np.subtract(1, ccdist[y])
+		ccdist_con.append(np.vstack((ccdist[y], ccdist_rev)))
+
+	ccdist_con = np.array(ccdist_con)
+	ccdist_log = np.log(ccdist_con)
+
+	return ccdist_log
 
 news = loadmat('news.mat')
 # partitioned_data[i] contains data with label i
@@ -61,6 +75,8 @@ print "class size is ", len(partitioned_data)
 class_prior = get_class_prior(partitioned_data)
 ccdist = get_ccdist(partitioned_data)
 
+class_prior_log = np.log(class_prior)
+ccdist_log = get_ccdist_log(ccdist)
 
 sys.exit(0)
 
