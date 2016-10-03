@@ -13,17 +13,13 @@ def partition(t_data, t_labels):
 	t_size = t_labels.size
 	class_size = np.unique(t_labels).size
 
-	t_size = 707
-	class_size = 2
-
 	partitioned_data = [[] for i in range(class_size)]
-	param = [0 for i in range(class_size)]
 
-	for d in range (0, t_size):
-		idx = t_labels[d]
+	for n in range (0, t_size):
+		idx = t_labels[n]
 		idx = idx[0]
 		idx -= 1 # class label is from 1 to 20. Convert it from 0 to 19
-		partitioned_data[idx].append(t_data[d])
+		partitioned_data[idx].append(t_data[n])
 
 	return partitioned_data
 
@@ -45,7 +41,7 @@ def get_ccdist(partitioned_data):
 	ccdist = []
 	for y in range (class_size):
 		partitioned_data[y] = np.array(partitioned_data[y])
-		# sum for each xi where i is from 0 to d
+		# sum for each xi where i is from 0 to n
 		column_sum = np.sum(partitioned_data[y], axis=0)
 		column_sum = column_sum.todense()
 		numerator = column_sum + 1
@@ -79,11 +75,14 @@ def get_class(x, prior, ccdist):
 		if (z > max_val):
 			max_val = z
 			max_idx = y
-	return max_idx
+
+	# add 1 to convert range from [0:19] to [1:20]
+	return max_idx+1
 
 news = loadmat('news.mat')
+
 # partitioned_data[i] contains data with label i
-partitioned_data = partition(news['testdata'], news['testlabels'])
+partitioned_data = partition(news['data'], news['labels'])
 print "class size is ", len(partitioned_data)
 
 class_prior = get_class_prior(partitioned_data)
@@ -92,6 +91,13 @@ ccdist = get_ccdist(partitioned_data)
 class_prior_log = np.log(class_prior)
 ccdist_log = get_ccdist_log(ccdist)
 
-get_class(news['data'][0], class_prior_log, ccdist_log)
+err = 0
+for x in range(len(news['testlabels'])):
+	approx = get_class(news['testdata'][x], class_prior_log, ccdist_log)
+	if approx != news['testlabels'][x]:
+		err += 1
+
+print "err", err
+print "total", (len(news['testlabels']))
 sys.exit(0)
 
