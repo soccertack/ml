@@ -63,6 +63,29 @@ def get_ccdist_log(ccdist):
 
 	return ccdist_log
 
+def get_class_raw(x, prior, ccdist):
+	
+	x = x.todense()
+	x = np.array(x)
+
+	max_val = float('-inf')
+	max_idx = 0
+	for y in range (len(prior)):
+		z = prior[y]
+		for k in range (x.shape[1]):
+			if x[0][k] == 1:
+				z *= ccdist[y][0][k]
+			else:
+				z *= (1- ccdist[y][0][k])
+			
+		if (z > max_val):
+			max_val = z
+			max_idx = y
+
+	# add 1 to convert range from [0:19] to [1:20]
+	return max_idx+1
+
+
 def get_class(x, prior, ccdist):
 	
 	x = x.todense()
@@ -92,10 +115,14 @@ class_prior_log = np.log(class_prior)
 ccdist_log = get_ccdist_log(ccdist)
 
 err = 0
+total = 0
 for x in range(len(news['testlabels'])):
-	approx = get_class(news['testdata'][x], class_prior_log, ccdist_log)
+	#approx = get_class(news['testdata'][x], class_prior_log, ccdist_log)
+	total += 1
+	approx = get_class_raw(news['testdata'][x], class_prior, ccdist)
 	if approx != news['testlabels'][x]:
 		err += 1
+	print "error rate: ", err/total, " err: ", err, " total: ", total
 
 print "err", err
 print "total", (len(news['testlabels']))
