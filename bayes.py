@@ -102,6 +102,20 @@ def get_class(x, prior, ccdist):
 	# add 1 to convert range from [0:19] to [1:20]
 	return max_idx+1
 
+def run(test_labels, test_data, class_prior, ccdist):
+	err = 0
+	total = 0
+	for x in range(len(test_labels)):
+		total += 1
+		approx = get_class_raw(test_data, class_prior, ccdist)
+		if approx != test_labels[x]:
+			err += 1
+		print "error rate: ", err/total, " err: ", err, " total: ", total
+
+	print "err", err
+	print "total", (len(test_labels))
+
+
 news = loadmat('news.mat')
 
 # partitioned_data[i] contains data with label i
@@ -114,17 +128,9 @@ ccdist = get_ccdist(partitioned_data)
 class_prior_log = np.log(class_prior)
 ccdist_log = get_ccdist_log(ccdist)
 
-err = 0
-total = 0
-for x in range(len(news['testlabels'])):
-	#approx = get_class(news['testdata'][x], class_prior_log, ccdist_log)
-	total += 1
-	approx = get_class_raw(news['testdata'][x], class_prior, ccdist)
-	if approx != news['testlabels'][x]:
-		err += 1
-	print "error rate: ", err/total, " err: ", err, " total: ", total
-
-print "err", err
-print "total", (len(news['testlabels']))
+print "run with training data"
+run(news['testlabels'], news['testdata'], class_prior, ccdist)
+print "run with test data"
+run(news['testlabels'], news['testdata'], class_prior, ccdist)
 sys.exit(0)
 
