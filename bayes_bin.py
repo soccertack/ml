@@ -12,14 +12,18 @@ def partition(t_data, t_labels):
 
 	t_size = t_labels.size
 	class_size = np.unique(t_labels).size
+	class_size = 2
 
 	partitioned_data = [[] for i in range(class_size)]
 
 	for n in range (0, t_size):
-		idx = t_labels[n]
-		idx = idx[0]
-		idx -= 1 # class label is from 1 to 20. Convert it from 0 to 19
-		partitioned_data[idx].append(t_data[n])
+		idx = t_labels[n][0]
+		if (idx == 1 or idx == 16 or idx == 20):
+			idx = 0
+			partitioned_data[idx].append(t_data[n])
+		elif(idx == 17 or idx == 18 or idx == 19):
+			idx = 1
+			partitioned_data[idx].append(t_data[n])
 
 	return partitioned_data
 
@@ -102,6 +106,33 @@ def get_class(x, prior, ccdist):
 	# add 1 to convert range from [0:19] to [1:20]
 	return max_idx+1
 
+def run(test_labels, test_data, class_prior, ccdist):
+
+        err = 0
+        total = 0
+	for x in range(len(test_labels)):
+		right_ans = test_labels[x]
+		# negative class
+		if (right_ans == 1 or right_ans == 16 or right_ans == 20):
+			right_ans = 1
+		# positive class
+		elif (right_ans == 17 or right_ans == 18 or right_ans == 19):
+			right_ans = 2
+		# skip others
+		else:
+			continue
+		
+		total += 1
+		approx = get_class_raw(test_data[x], class_prior, ccdist)
+		if approx != right_ans:
+			err += 1
+		
+		print "error rate: ", err/total, " err: ", err, " total: ", total
+
+        print "err", err
+        print "total", total
+
+
 news = loadmat('news.mat')
 
 # partitioned_data[i] contains data with label i
@@ -114,17 +145,11 @@ ccdist = get_ccdist(partitioned_data)
 class_prior_log = np.log(class_prior)
 ccdist_log = get_ccdist_log(ccdist)
 
-err = 0
-total = 0
-for x in range(len(news['testlabels'])):
-	#approx = get_class(news['testdata'][x], class_prior_log, ccdist_log)
-	total += 1
-	approx = get_class_raw(news['testdata'][x], class_prior, ccdist)
-	if approx != news['testlabels'][x]:
-		err += 1
-	print "error rate: ", err/total, " err: ", err, " total: ", total
+print "run with training data"
+run(news['testlabels'], news['testdata'], class_prior, ccdist)
+print "run with test data"
+run(news['testlabels'], news['testdata'], class_prior, ccdist)
 
-print "err", err
-print "total", (len(news['testlabels']))
+
 sys.exit(0)
 

@@ -107,7 +107,7 @@ def run(test_labels, test_data, class_prior, ccdist):
 	total = 0
 	for x in range(len(test_labels)):
 		total += 1
-		approx = get_class_raw(test_data, class_prior, ccdist)
+		approx = get_class_raw(test_data[x], class_prior, ccdist)
 		if approx != test_labels[x]:
 			err += 1
 		print "error rate: ", err/total, " err: ", err, " total: ", total
@@ -129,7 +129,7 @@ class_prior_log = np.log(class_prior)
 ccdist_log = get_ccdist_log(ccdist)
 
 print "run with training data"
-run(news['testlabels'], news['testdata'], class_prior, ccdist)
+run(news['labels'], news['data'], class_prior, ccdist)
 print "run with test data"
 run(news['testlabels'], news['testdata'], class_prior, ccdist)
 sys.exit(0)
