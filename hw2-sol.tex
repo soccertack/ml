@@ -1,0 +1,75 @@
+\documentclass[11pt]{article}
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage{listings}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{textcomp}
+\usepackage{graphicx}
+\usepackage{underscore}
+\lstset{%
+  basicstyle=\small\ttfamily,
+  mathescape=true,
+  upquote=true,
+}
+
+\usepackage{amsmath,amsbsy,amsfonts,amssymb,amsthm,color,dsfont,mleftright,commath}
+
+\def\ddefloop#1{\ifx\ddefloop#1\else\ddef{#1}\expandafter\ddefloop\fi}
+
+% \bbA, \bbB, ...
+\def\ddef#1{\expandafter\def\csname bb#1\endcsname{\ensuremath{\mathbb{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+
+% \cA, \cB, ...
+\def\ddef#1{\expandafter\def\csname c#1\endcsname{\ensuremath{\mathcal{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+
+% \vA, \vB, ..., \va, \vb, ...
+\def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\ddefloop
+
+% \valpha, \vbeta, ...,  \vGamma, \vDelta, ...,
+\def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{\csname #1\endcsname}}}}
+\ddefloop {alpha}{beta}{gamma}{delta}{epsilon}{varepsilon}{zeta}{eta}{theta}{vartheta}{iota}{kappa}{lambda}{mu}{nu}{xi}{pi}{varpi}{rho}{varrho}{sigma}{varsigma}{tau}{upsilon}{phi}{varphi}{chi}{psi}{omega}{Gamma}{Delta}{Theta}{Lambda}{Xi}{Pi}{Sigma}{varSigma}{Upsilon}{Phi}{Psi}{Omega}{ell}\ddefloop
+
+\newcommand\braces[1]{\{#1\}}
+
+\theoremstyle{definition}
+\newtheorem{problem}{Problem}
+\newenvironment{solution}{\noindent\emph{Solution.}}{\hfill$\square$}
+
+%-------------------------------------------------------------------------------
+
+\title{COMS 4771 Fall 2016 Homework 2}
+\author{Jin Tack Lim, jl4312
+  }
+\date{%
+  }
+
+\begin{document}
+\maketitle
+
+
+%-------------------------------------------------------------------------------
+
+\begin{problem} Naive Bayers
+\end{problem}
+
+\begin{solution}
+(a)
+$\sum_{i=1}^{n} 1\{y_i = y\}x_{i,j} / 1\{y_i = y\} $
+
+(b)
+training error rate: 0.2428
+test error rate: 0.5082
+
+(c)
+training error rate: 0.2090
+test error rate: 0.2895
+
+(d)
+
+\end{solution}
+
+\end{document}
+
