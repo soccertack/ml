@@ -40,3 +40,17 @@ with open(TR_FILE) as csvfile:
 				wordcount[new_word] += 1
 	print wordcount
 
+# tf = get_tf()
+# format of tf = ( (1, 2, 0, 0, 0, ... 3), label1), ((1,...0), label2)
+# or just two matrix just like data and label
+
+# avg_perceptron_2pass(data, label)
+# avg_perceptron_1pass(data, label, w) returns w, w_avg
+
+# w = (0, ... 0)
+# w_avg = (0, ..., 0)
+# for each data
+#  if y * ( w dot xi) < 0
+#      w = w + y*x
+#  w_avg += w
+
