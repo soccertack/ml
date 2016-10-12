@@ -12,6 +12,25 @@ from collections import Counter
 
 TR_FILE="reviews_tr.csv"
 
+# return avg of n+1 classifiers
+def avg_pct_1pass(data, label, w)
+	w_avg = w
+# w = (0, ... 0)
+# w_avg = (0, ..., 0)
+# for each data
+#  if y * ( w dot xi) < 0
+#      w = w + y*x
+#  w_avg += w
+	return w, w_avg
+
+def avg_pct_2pass(data, label)
+	#suffle data
+	w = 0
+	w, w_avg =  avg_pct_1pass(data, level, w)
+	#suffle data
+	w, w_avg =  avg_pct_1pass(data, level, w)
+	return w_avg
+
 wordcount={}
 with open(TR_FILE) as csvfile:
 	reader = csv.reader(csvfile)
@@ -44,13 +63,12 @@ with open(TR_FILE) as csvfile:
 # format of tf = ( (1, 2, 0, 0, 0, ... 3), label1), ((1,...0), label2)
 # or just two matrix just like data and label
 
-# avg_perceptron_2pass(data, label)
-# avg_perceptron_1pass(data, label, w) returns w, w_avg
+w_avg = avg_perceptron_2pass(data, label)
 
-# w = (0, ... 0)
-# w_avg = (0, ..., 0)
-# for each data
-#  if y * ( w dot xi) < 0
-#      w = w + y*x
-#  w_avg += w
+# training data
+hw3_test(w_avg, data, label)
+
+# test data
+hw3_test(w_avg, test_data, test_label)
+
 
