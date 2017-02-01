@@ -26,22 +26,14 @@ class LinearRegressionSimulator(object):
 	def SimPoly(self, XInput):
 
 		# Convert Xinput to ndarray
-		NDArray = XInput.values.astype(float)
+		input_array = XInput.values.astype(float)
 	
-		num_rows = NDArray.shape[0]
+		# Xinput is a column vector
+		num_input = input_array.shape[0]
 
-		# Convert Nx1 array to (N+1)x1 by adding 1 as a new first row
-		N1Array = np.insert(NDArray, 0, 1, axis=0)
-
-		mult_N1Array = N1Array
-		mean_array = N1Array
-
-		for x in range(1, num_rows):
-			# Set each element to 1 once it is multipled by d times
-			mult_N1Array[x] = 1
-			mean_array = np.multiply(mean_array, mult_N1Array)
-
-		print ("mean array is ")
+		# vander_input is (num_input x D+1) where ith rows is input_array.T^i
+		vander_input = np.vander(input_array.flatten(), self.theta.size, increasing=True).T
+		mean_array = np.dot(self.theta, vander_input)
 
 		# Get normal distribution
 		return np.random.normal(mean_array, self.stddev)
