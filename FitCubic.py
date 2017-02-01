@@ -14,7 +14,8 @@ sim = LinearRegressionSimulator(np.array([[2, 1, 3, 4]]), 0.1)
 
 runs = [(10, 10), (100, 10), (10, 100)]
 max_degree = 10
-for (M,N) in runs:
+
+for index, (N,M) in enumerate(runs):
 	# Generate training data
 	training = np.random.uniform(0, 1, N)
 	training.shape = (N, 1)
@@ -23,10 +24,12 @@ for (M,N) in runs:
 
 	# Generate test data
 	test = np.random.uniform(0, 1, M)
-	test.shape = (N, 1)
+	test.shape = (M, 1)
 	XInput = pd.DataFrame(test)
 	test_y = (sim.SimPoly(XInput))
 
+	# Prepare pdf
+	pp = PdfPages('RiskPlot'+str(index)+'.pdf')
 	for degree in range(0, max_degree+1):
 		x = np.vander(training.flatten(), degree+1, increasing=True)
 
@@ -46,7 +49,8 @@ for (M,N) in runs:
 		# Plot Test data
 		pl.plot(test.flatten(), test_y.flatten(), 'b.')
 
-		pl.show()
+		#pl.show()
+		pp.savefig()
+		pl.close()
 
-	# TODO: remove
-	sys.exit()
+	pp.close()
