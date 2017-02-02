@@ -15,22 +15,53 @@ sim = LinearRegressionSimulator(np.array([[2, 1, 3, 4]]), 0.1)
 runs = [(10, 10), (100, 10), (10, 100)]
 max_degree = 10
 
+def dump_data_each_degree(prefix, run_index, degree_index, header, nparray):
+	f = open(prefix+str(run_index)+'.'+str(degree_index)+'.txt', 'w')
+	f.write(output_header)
+	if nparray != None:
+		f.write(np.array2string(nparray)+"\n")
+	f.close()
+
+def dump_data(prefix, header, nparray):
+	f = open(prefix+'.txt', 'w')
+	f.write(output_header)
+	if nparray != None:
+		f.write(np.array2string(nparray)+"\n")
+	f.close()
+
 for index, (N,M) in enumerate(runs):
 	# Generate training data
 	training = np.random.uniform(0, 1, N)
 	training.shape = (N, 1)
 	XInput = pd.DataFrame(training)
 	training_y = (sim.SimPoly(XInput))
+	training_y.shape = (N, 1)
 
 	# Generate test data
 	test = np.random.uniform(0, 1, M)
 	test.shape = (M, 1)
 	XInput = pd.DataFrame(test)
 	test_y = (sim.SimPoly(XInput))
+	test_y.shape = (M, 1)
+
+	# run_index starts from 1
+	run_index = index+1
 
 	# Prepare pdf
-	pp = PdfPages('RiskPlot'+str(index)+'.pdf')
+	pp = PdfPages('RiskPlot'+str(run_index)+'.pdf')
+
+	output_header = "Run #"+str(run_index)+" (N=" + str(N) + ", M=" + str(M) + ")\n"
+	output_header += "Iteration 1\n"
+
+	dump_data("x.train."+str(run_index), output_header, training)
+	dump_data("x.test."+str(run_index), output_header, test)
+	dump_data("y.train."+str(run_index), output_header, training_y)
+	dump_data("y.test."+str(run_index), output_header, test_y)
+
 	prev_R = 0
+
+	risk_train = []
+	risk_test = []
 	for degree in range(0, max_degree+1):
 		x = np.vander(training.flatten(), degree+1, increasing=True)
 
@@ -44,19 +75,28 @@ for index, (N,M) in enumerate(runs):
 			print("NOT Invertible")
 		# a = (XTX)-1XTy (Nx1 matrix)
 		xtx_inv_xt = np.dot(xtx_inv, x.T)
-		a = np.dot(xtx_inv_xt, training_y.T)
+		a = np.dot(xtx_inv_xt, training_y)
 
+		dump_data("ThetaStar."+str(run_index)+"."+str(degree), output_header, a)
 		print ("degree: ", degree)
 		
-		diff  = training_y.T - np.dot(x, a)
-		R = np.linalg.norm(diff)**2
-		print ("R: ", R)
+		diff  = training_y - np.dot(x, a)
+		training_R = np.linalg.norm(diff)**2 / (2*N)
+		print ("Training R: ", training_R)
+		risk_train.append(training_R)
 
 		#print (diff)
+		'''
 		if prev_R!=0 and (R > prev_R):
-			sys.exit()
+			print ("========== R is BIG ===============")
 		prev_R = R
+		'''
 			
+		test_x = np.vander(test.flatten(), degree+1, increasing=True)
+		diff = test_y -np.dot(test_x, a)
+		test_R = np.linalg.norm(diff)**2 / (2*M)
+		print ("Test R: ", test_R)
+		risk_test.append(test_R)
 
 		# Plot graph
 		reg_x = np.linspace(0, 1)
@@ -75,8 +115,15 @@ for index, (N,M) in enumerate(runs):
 		p = np.poly1d(z)
 		pl.plot(reg_x.flatten(), p(reg_x.flatten()), 'r-')
 		'''
+
 		#pl.show()
 		pp.savefig()
 		pl.close()
 
+	risk_train_np = np.array(risk_train)
+	risk_train_np.shape = (max_degree+1, 1)
+	risk_test_np = np.array(risk_test)
+	risk_test_np.shape = (max_degree+1, 1)
+	dump_data("Risk.train."+str(run_index), output_header, risk_train_np)
+	dump_data("Risk.test."+str(run_index), output_header, risk_test_np)
 	pp.close()
