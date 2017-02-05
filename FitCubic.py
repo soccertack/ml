@@ -16,18 +16,19 @@ runs = [(10, 10), (100, 10), (10, 100)]
 max_degree = 10
 
 def dump_data_each_degree(prefix, run_index, degree_index, header, nparray):
+	return
 	f = open(prefix+str(run_index)+'.'+str(degree_index)+'.txt', 'w')
 	f.write(output_header)
 	if nparray != None:
-		f.write(np.array2string(nparray)+"\n")
+		f.write(np.savetxt(nparray))
 	f.close()
 
 def dump_data(prefix, header, nparray):
 	f = open(prefix+'.txt', 'w')
 	f.write(output_header)
-	if nparray != None:
-		f.write(np.array2string(nparray)+"\n")
 	f.close()
+	if nparray != None:
+		np.savetxt(prefix+'.txt', nparray)
 
 for index, (N,M) in enumerate(runs):
 	# Generate training data
@@ -48,15 +49,17 @@ for index, (N,M) in enumerate(runs):
 	run_index = index+1
 
 	# Prepare pdf
-	pp = PdfPages('RiskPlot'+str(run_index)+'.pdf')
+	pp = PdfPages('DataPlot'+str(run_index)+'.pdf')
 
+
+	'''
 	output_header = "Run #"+str(run_index)+" (N=" + str(N) + ", M=" + str(M) + ")\n"
 	output_header += "Iteration 1\n"
-
-	dump_data("x.train."+str(run_index), output_header, training)
-	dump_data("x.test."+str(run_index), output_header, test)
-	dump_data("y.train."+str(run_index), output_header, training_y)
-	dump_data("y.test."+str(run_index), output_header, test_y)
+	'''
+	np.savetxt('x.train.'+str(run_index)+'.txt', training)
+	np.savetxt('x.test.'+str(run_index)+'.txt', test)
+	np.savetxt('y.train.'+str(run_index)+'.txt', training_y)
+	np.savetxt('y.test.'+str(run_index)+'.txt', test_y)
 
 	prev_R = 0
 
@@ -77,7 +80,7 @@ for index, (N,M) in enumerate(runs):
 		xtx_inv_xt = np.dot(xtx_inv, x.T)
 		a = np.dot(xtx_inv_xt, training_y)
 
-		dump_data("ThetaStar."+str(run_index)+"."+str(degree), output_header, a)
+		np.savetxt('ThetaStar.'+str(run_index)+"."+str(degree)+'.txt', a)
 		print ("degree: ", degree)
 		
 		diff  = training_y - np.dot(x, a)
@@ -124,6 +127,18 @@ for index, (N,M) in enumerate(runs):
 	risk_train_np.shape = (max_degree+1, 1)
 	risk_test_np = np.array(risk_test)
 	risk_test_np.shape = (max_degree+1, 1)
-	dump_data("Risk.train."+str(run_index), output_header, risk_train_np)
-	dump_data("Risk.test."+str(run_index), output_header, risk_test_np)
+	np.savetxt("Risk.train."+str(run_index)+'.txt', risk_train_np)
+	np.savetxt("Risk.test."+str(run_index)+'.txt', risk_test_np)
 	pp.close()
+
+	# Draw a plot
+	r_plot = PdfPages('RiskPlot'+str(run_index)+'.pdf')
+	deg = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+	pl.plot(deg, risk_train, "g--", label="Train Risk")
+	pl.plot(deg, risk_test, "r--", label="Test Risk")
+	pl.legend()
+	pl.xlabel('Dimension')
+	pl.xticks(np.linspace(0,10,11,endpoint=True))
+	r_plot.savefig()
+	pl.close()
+	r_plot.close()
