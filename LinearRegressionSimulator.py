@@ -3,24 +3,32 @@ import pandas as pd
 
 class LinearRegressionSimulator(object):
 
-	def __init__(self, theta, stddev):
-		self.theta = theta
-		self.stddev= stddev
+	def __init__(self, Theta, std):
+		"""
+		Inputs:
+		Theta - array of coefficients (nonempty 1xD+1 numpy array)
+		std   - standard deviation (float)
+		"""
 
-	# XInput is pandas Data Frame
+		assert len(Theta) != 0
+
+		self.Theta = Theta
+		self.std = std
+
 	def SimData(self, XInput):
+		"""
+		Input:
+		XInput - (NxD pandas dataframe)
+		Returns: outarray - (N-dim vector)
+		"""
+		N,D = XInput.shape
 
-		# Convert Xinput to ndarray
-		NDArray = XInput.values.astype(float)
+		assert D+1 == len(self.Theta)
 
-		# Convert NxD array to Nx(D+1) by adding a new column of 1s as a first column
-		ND1Array = np.insert(NDArray, 0, 1, axis=1)
+		self.means = self.Theta[0]+np.matmul(XInput, self.Theta[1:])
+		outarray = self.std*np.random.randn(N)+self.means
 
-		# Get means for each data (i.e. row)
-		mean_array = np.dot(ND1Array, self.theta.T)
-
-		# Get normal distribution
-		return np.random.normal(mean_array, self.stddev)
+		return outarray
 
 	# XInput is a single column pandas vector
 	def SimPoly(self, XInput):
@@ -32,10 +40,10 @@ class LinearRegressionSimulator(object):
 		num_input = input_array.shape[0]
 
 		# vander_input is (num_input x D+1) where ith rows is input_array.T^i
-		vander_input = np.vander(input_array.flatten(), self.theta.size, increasing=True).T
-		mean_array = np.dot(self.theta, vander_input)
+		vander_input = np.vander(input_array.flatten(), self.Theta.size, increasing=True).T
+		mean_array = np.dot(self.Theta.T, vander_input)
 
 		# Get normal distribution
-		return np.random.normal(mean_array, self.stddev)
+		return np.random.normal(mean_array, self.std)
 
 
