@@ -8,7 +8,7 @@ import sys
 from matplotlib.backends.backend_pdf import PdfPages
 
 # my UNI is jl4312
-sim = LinearRegressionSimulator(np.array([[2, 1, 3, 4]]).T, 0.1)
+sim = LinearRegressionSimulator(np.array([[2, 1, 3, 4]]), 0.1)
 runs = [(10, 10), (100, 10), (10, 100)]
 max_degree = 10
 

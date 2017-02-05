@@ -41,7 +41,10 @@ class LinearRegressionSimulator(object):
 
 		# vander_input is (num_input x D+1) where ith rows is input_array.T^i
 		vander_input = np.vander(input_array.flatten(), self.Theta.size, increasing=True).T
-		mean_array = np.dot(self.Theta.T, vander_input)
+		# Make sure that Theta is a column vector 
+		Theta = self.Theta
+		Theta.shape = (1, self.Theta.size)
+		mean_array = np.dot(Theta, vander_input)
 
 		# Get normal distribution
 		return np.random.normal(mean_array, self.std)
