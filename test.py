@@ -1,0 +1,2 @@
+from FitCubic import *
+FitCubic()
