@@ -1,0 +1,70 @@
+\documentclass[11pt]{article}
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage{listings}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{textcomp}
+\usepackage{graphicx}
+\usepackage{underscore}
+\lstset{%
+  basicstyle=\small\ttfamily,
+  mathescape=true,
+  upquote=true,
+}
+
+\usepackage{amsmath,amsbsy,amsfonts,amssymb,amsthm,color,dsfont,mleftright,commath}
+
+\def\ddefloop#1{\ifx\ddefloop#1\else\ddef{#1}\expandafter\ddefloop\fi}
+
+% \bbA, \bbB, ...
+\def\ddef#1{\expandafter\def\csname bb#1\endcsname{\ensuremath{\mathbb{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+
+% \cA, \cB, ...
+\def\ddef#1{\expandafter\def\csname c#1\endcsname{\ensuremath{\mathcal{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+
+% \vA, \vB, ..., \va, \vb, ...
+\def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\ddefloop
+
+% \valpha, \vbeta, ...,  \vGamma, \vDelta, ...,
+\def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{\csname #1\endcsname}}}}
+\ddefloop {alpha}{beta}{gamma}{delta}{epsilon}{varepsilon}{zeta}{eta}{theta}{vartheta}{iota}{kappa}{lambda}{mu}{nu}{xi}{pi}{varpi}{rho}{varrho}{sigma}{varsigma}{tau}{upsilon}{phi}{varphi}{chi}{psi}{omega}{Gamma}{Delta}{Theta}{Lambda}{Xi}{Pi}{Sigma}{varSigma}{Upsilon}{Phi}{Psi}{Omega}{ell}\ddefloop
+
+\newcommand\braces[1]{\{#1\}}
+
+\theoremstyle{definition}
+\newtheorem{problem}{Problem}
+\newenvironment{solution}{\noindent\emph{Solution.}}{\hfill$\square$}
+
+%-------------------------------------------------------------------------------
+
+\title{COMS 4771 Spring 2017 Homework 1}
+\author{Jin Tack Lim, jl4312
+  }
+\date{%
+  }
+
+\begin{document}
+\maketitle
+
+
+%-------------------------------------------------------------------------------
+
+Problem 2.B
+
+I was able to observe that test risk is getting higher as the dimension
+increases due to the overfit. This is what we discussed in the class. More
+specifically, with small number of training data (Run1 and Run3), the test
+risk is really high. With relatively big number of training data (Run 2), the
+test risk is aligned with the training risk. I expected that if we increase the
+dimension to 100, which is the number of training data, then I would observe
+the same high test risk due to overfit.
+
+I sometimes observed that training risk is NOT decreasing at dimension 8, 9 or 10 which is different from the theory. Training risk increased slightly (e.g. 2.144248496540429832e-04 to 2.238320913249494822e-04 from dimension 8 to dimension 9), and I think this is due to inaccuracies of operations on the computer.
+
+I also observed that the matrix (x.T dot x) is sometimes not invertible for small training size(N=10) with high dimensions (e.g. 8,9 and 10)
+
+\end{document}
+
