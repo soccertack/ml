@@ -1,0 +1,5 @@
+*.txt
+*.pdf
+*.DS_Store
+.vim_mru_files
+__pycache__
