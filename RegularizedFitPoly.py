@@ -6,6 +6,9 @@ import matplotlib
 import pylab as pl
 import sys
 from matplotlib.backends.backend_pdf import PdfPages
+import pickle
+
+PICKLE_FNAME = "problem1.pkl"
 
 # Generate K random inputs and K correspoding outputs from SimPoly function
 def gen_data(sim, K):
@@ -17,9 +20,10 @@ def gen_data(sim, K):
 	
 	return data_x, data_y
 
-# Computes the empirical risk of the given params Theta on the dataset
-def EmpiricalRisk(x, y, Theta, N):
-        return ( np.linalg.norm( y - np.dot( x, Theta ) ) ** 2 ) / (2. * N)
+# Computes the regularized risk
+def RegularizedRisk(x, y, Theta, N, lambda_val):
+        return ( np.linalg.norm( y - np.dot( x, Theta ) ) ** 2 ) / (2. * N) \
+			+ (np.linalg.norm(Theta) ** 2) * lambda_val /2
 
 def Plot_Original():
 	# my UNI is jl4312
@@ -40,7 +44,13 @@ def RegularizedFitPoly():
 
 	training, training_y = gen_data(sim, N)
 	test, test_y = gen_data(sim, M)
-	# TODO: Save x and y for train and test to pickel file (problem1.pkl)
+
+	# Save training/test x and y to the dict
+	out_dict = {}
+	out_dict["xtrain"] = training
+	out_dict["ytrain"] = training_y
+	out_dict["xtest"] = test
+	out_dict["ytest"] = test_y
 
 	# x: Nx7 array
 	# rows represent each input
@@ -53,7 +63,7 @@ def RegularizedFitPoly():
 	# Plot original and training data.
 	Plot_Original()
 	pl.plot(training, training_y, "ro",  label="Training data")
-	# Prepare for regression plots
+	# Prepare for the regression plots
 	cmap = pl.get_cmap('jet')
 	colors = cmap(np.linspace(0, 1, len(lambda_array)))
 
@@ -61,8 +71,15 @@ def RegularizedFitPoly():
 	risk_train = np.full( len(lambda_array) , fill_value=np.nan )
 	risk_test = np.full( len(lambda_array) , fill_value=np.nan )
 
+	# Prepare dicts
+	theta_dict = {}
+	risk_test_dict = {}
+	risk_training_dict = {}
+
 	# loop over different lambda values
 	for idx, lambda_val in enumerate(lambda_array):
+
+		# Get ThetaStar
 		if lambda_val == 0:
 			thetaStar = np.dot( np.linalg.pinv( x ), training_y )
 		else:
@@ -72,14 +89,17 @@ def RegularizedFitPoly():
 			# thetaStar = (XTX)-1XTy (Nx1 matrix)
 			xtx_inv_xt = np.dot(xtx_inv, x.T)
 			thetaStar = np.dot(xtx_inv_xt, training_y)
-
-		# TODO: save thetaStar to pickle file
 		
 		# Get training risk
-		risk_test[idx] = EmpiricalRisk(x, training_y, thetaStar, N)
+		risk_train[idx] = RegularizedRisk(x, training_y, thetaStar, N, lambda_val)
 		# Get test risk
 		test_x = np.polynomial.legendre.legvander(test.flatten(), degree)
-		risk_test[idx] = EmpiricalRisk(test_x, test_y, thetaStar, M)
+		risk_test[idx] = RegularizedRisk(test_x, test_y, thetaStar, M, lambda_val)
+
+		# Save data to local dict
+		theta_dict[lambda_val] = thetaStar
+		risk_test_dict[lambda_val] = risk_test[idx]
+		risk_training_dict[lambda_val] = risk_train[idx]
 
 		# Plot the regression with lambda
 		reg_x = np.linspace(-1, 1)
@@ -90,8 +110,15 @@ def RegularizedFitPoly():
 		# Max y value of true data is 10 (4+3+1+2)
 		pl.axis((x1,x2,0,15))
 
-	pl.legend()
-	pl.show()
-	# TODO: save risk 
+	out_dict["ThetaStar"]= theta_dict
+	out_dict["RiskTest"] = risk_test_dict
+	out_dict["RiskTrain"] = risk_training_dict
 
-RegularizedFitPoly()
+	pl.legend()
+	#TODO: save this to pdf
+	#pl.show()
+	
+	with open(PICKLE_FNAME, 'wb') as f:
+		pickle.dump(out_dict, f)
+
+#RegularizedFitPoly()
