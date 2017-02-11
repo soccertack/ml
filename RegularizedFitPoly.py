@@ -115,8 +115,11 @@ def RegularizedFitPoly():
 	out_dict["RiskTrain"] = risk_training_dict
 
 	pl.legend()
-	#TODO: save this to pdf
-	#pl.show()
+
+	#Save this to pdf
+	regression_plot = PdfPages("ApproximationPlot.pdf")
+	regression_plot.savefig()
+	regression_plot.close()
 	
 	with open(PICKLE_FNAME, 'wb') as f:
 		pickle.dump(out_dict, f)
