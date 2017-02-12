@@ -74,14 +74,17 @@ The given prior is the gamma distribution with $\alpha = 4$ and $\beta = 1$
  p(\alpha | X ) & =  \frac{p(\alpha)p(X|\alpha)}{p(X)} \\
  & = \frac{\frac{\lambda^3 e^{-\lambda}}{6} \prod_{i=1}^{N} \lambda e^{-\lambda x_i}} {p(X)} \\
  & \propto {\lambda^{N+3} e^{-\lambda} e^{\sum_{i=1}^{N} x_i}} \\
- & \propto {\lambda^{(N+4) -1} e^{-\lambda(1+\sum_{i=1}^{N} x_i)} } 
+ & = {\lambda^{(N+4) -1} e^{-\lambda(1+\sum_{i=1}^{N} x_i)} } 
 \end{split}
 \end{equation*}
 Therefore
-\begin{eqnarray}
- p(\alpha | X ) =  Gamma(\lambda; N+4, 1+\sum_{i=1}^{N} x_i) \nonumber \\
-= \frac{1}{\Gamma(N+4)} \lambda^{N+3} e^{-\lambda(1+\sum_{i=1}^{N} x_i}
-\end{eqnarray}
+
+\begin{equation*}
+\begin{split}
+ p(\alpha | X ) & =  Gamma(\lambda; N+4, 1+\sum_{i=1}^{N} x_i)  \\
+& = \frac{1}{\Gamma(N+4)} \lambda^{N+3} e^{-\lambda(1+\sum_{i=1}^{N} x_i}
+\end{split}
+\end{equation*}
 
 
 [EAP]
@@ -89,35 +92,42 @@ Therefore
 Mean of the gamma distribution $E[Gamma(\lambda;\alpha, \beta)] = \frac{\alpha}{\beta}$
 
 Therefore
-\begin{eqnarray}
-EAP = \frac{N+4}{1+\sum_{i=1}^{N} x_i)}
-\end{eqnarray}
+\begin{equation*}
+\begin{split}
+EAP = \frac{N+4}{1+\sum_{i=1}^{N} x_i}
+\end{split}
+\end{equation*}
 
 (b) Coin problem
 
 [Posterior]
-\begin{eqnarray}
- p(\alpha | X ) =  \frac{p(\alpha)p(X|\alpha)}{p(X)} \nonumber
-\end{eqnarray}
+
 Let's say $N_1$ is the number of heads out of N trials.
-\begin{eqnarray}
-= \frac{30\alpha^2(1-\alpha)^2\alpha^{N_1} (1-\alpha)^{N-{N_1}}}{p(X)} \nonumber \\
-= \frac{30\alpha^{N_1+2} (1-\alpha)^{N-{N_1}+2}}{p(X)} \nonumber \\
-= \frac{\alpha^{N_1+2} (1-\alpha)^{N-{N_1}+2}}{c(N_1 +2, N - N_1 +2)} \nonumber
-\end{eqnarray}
+\begin{equation*}
+\begin{split}
+ p(\alpha | X ) & =  \frac{p(\alpha)p(X|\alpha)}{p(X)}  \\
+& = \frac{30\alpha^2(1-\alpha)^2\alpha^{N_1} (1-\alpha)^{N-{N_1}}}{p(X)}  \\
+& = \frac{30\alpha^{N_1+2} (1-\alpha)^{N-{N_1}+2}}{p(X)}  \\
+& = \frac{\alpha^{N_1+2} (1-\alpha)^{N-{N_1}+2}}{c(N_1 +2, N - N_1 +2)} 
+\end{split}
+\end{equation*}
 where c(m, k) is defined as following
-\begin{eqnarray}
-c(m, k) = \frac{m!k!}{(m+k+1)!} \nonumber
-\end{eqnarray}
+\begin{equation*}
+\begin{split}
+c(m, k) = \frac{m!k!}{(m+k+1)!} 
+\end{split}
+\end{equation*}
 
 [EAP]
-\begin{eqnarray}
-EAP = E[Posterior] \nonumber \\
-= E[\frac{\alpha^{N_1+2} (1-\alpha)^{N-{N_1}+2}}{c(N_1 +2, N - N_1 +2)}] \nonumber \\
-= \frac{\int_{0}^{1}\alpha \alpha^{N_1+2} (1-\alpha)^{N-{N_1}+2} d\alpha}{c(N_1 +2, N - N_1 +2)} \nonumber \\
-= \frac{c(N_1 +3, N - N_1 +2)}{c(N_1 +2, N - N_1 +2)} \nonumber \\
-= \frac{N_1 + 3}{N_1 + 5}
-\end{eqnarray}
+\begin{equation*}
+\begin{split}
+EAP & = E[Posterior]  \\
+& = E[\frac{\alpha^{N_1+2} (1-\alpha)^{N-{N_1}+2}}{c(N_1 +2, N - N_1 +2)}]  \\
+& = \frac{\int_{0}^{1}\alpha \alpha^{N_1+2} (1-\alpha)^{N-{N_1}+2} d\alpha}{c(N_1 +2, N - N_1 +2)}  \\
+& = \frac{c(N_1 +3, N - N_1 +2)}{c(N_1 +2, N - N_1 +2)}  \\
+& = \frac{N_1 + 3}{N_1 + 5}
+\end{split}
+\end{equation*}
 
 \end{document}
 
