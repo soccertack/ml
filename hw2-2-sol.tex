@@ -1,0 +1,107 @@
+\documentclass[11pt]{article}
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage{listings}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{textcomp}
+\usepackage{graphicx}
+\usepackage{underscore}
+\lstset{%
+  basicstyle=\small\ttfamily,
+  mathescape=true,
+  upquote=true,
+}
+
+\usepackage{amsmath,amsbsy,amsfonts,amssymb,amsthm,color,dsfont,mleftright,commath}
+
+\def\ddefloop#1{\ifx\ddefloop#1\else\ddef{#1}\expandafter\ddefloop\fi}
+
+% \bbA, \bbB, ...
+\def\ddef#1{\expandafter\def\csname bb#1\endcsname{\ensuremath{\mathbb{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+
+% \cA, \cB, ...
+\def\ddef#1{\expandafter\def\csname c#1\endcsname{\ensuremath{\mathcal{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+
+% \vA, \vB, ..., \va, \vb, ...
+\def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\ddefloop
+
+% \valpha, \vbeta, ...,  \vGamma, \vDelta, ...,
+\def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{\csname #1\endcsname}}}}
+\ddefloop {alpha}{beta}{gamma}{delta}{epsilon}{varepsilon}{zeta}{eta}{theta}{vartheta}{iota}{kappa}{lambda}{mu}{nu}{xi}{pi}{varpi}{rho}{varrho}{sigma}{varsigma}{tau}{upsilon}{phi}{varphi}{chi}{psi}{omega}{Gamma}{Delta}{Theta}{Lambda}{Xi}{Pi}{Sigma}{varSigma}{Upsilon}{Phi}{Psi}{Omega}{ell}\ddefloop
+
+\newcommand\braces[1]{\{#1\}}
+
+\theoremstyle{definition}
+\newtheorem{problem}{Problem}
+\newenvironment{solution}{\noindent\emph{Solution.}}{\hfill$\square$}
+
+%-------------------------------------------------------------------------------
+
+\title{COMS 4771 Spring 2017 Homework 2}
+\author{Jin Tack Lim, jl4312
+  }
+\date{%
+  }
+
+\begin{document}
+\maketitle
+
+
+%-------------------------------------------------------------------------------
+% \frac{1}{{ \sqrt {2\pi \sigma ^2} }}e^{{{ - \left( {x - \mu } \right)^2 } \mathord{\left/ {\vphantom {{ - \left( {x - \mu } \right)^2 } {2\sigma ^2 }}} \right. \kern-\nulldelimiterspace} {2\sigma ^2 }}}
+
+\newcommand{\gau}[3]{
+$\frac{1}{{ \sqrt {2\pi #3 ^2} }}e^{ \frac { - \left( {#1 - #2 } \right)^2 } {2#3 ^2}}$
+}
+
+\newcommand{\gauraw}[3]{
+\frac{1}{{ \sqrt {2\pi #3 ^2} }}e^{ \frac { - \left( {#1 - #2 } \right)^2 } {2#3 ^2}}
+}
+
+
+Problem 2
+
+(a) Posteriori:
+\begin{eqnarray}
+ p(\alpha | X ) \propto p(\alpha)p(X|\alpha) \nonumber 
+\end{eqnarray}
+\begin{eqnarray}
+ = \gauraw{\mu}{\mu_p}{\sigma_p} \prod_{i=1}^{N} \gauraw{x_i}{\mu}{\sigma} \nonumber
+\end{eqnarray}
+(Remove/Add constant terms to make the following term)
+\begin{eqnarray}
+ \propto exp\Bigg\{ - \frac {\mu - \frac{\mu_p\sigma^2 + \sum_{i=1}^{N} \sigma_p^2x_i}{\sigma^2 + N\sigma_p^2}}
+		{2 \frac{\sigma_p^2\sigma^2}{\sigma^2 + N\sigma_p^2}} \Bigg\} \nonumber
+\end{eqnarray}
+
+Once we define
+\begin{eqnarray}
+\sigma_N = \frac{\sigma_p^2\sigma^2}{\sigma^2 + N\sigma_p^2} \nonumber \\
+\mu_N = \frac{\mu_p\sigma^2 + \sum_{i=1}^{N} \sigma_p^2x_i}{\sigma^2 + N\sigma_p^2} \nonumber
+\end{eqnarray}
+
+then,
+\begin{eqnarray}
+ p(\alpha | X ) \propto exp{\frac{-(\mu - \mu_N)^2}{2\sigma_N^2}} \nonumber 
+\end{eqnarray}
+
+We can apply the Gaussian integral, and get the posteriori.
+\begin{eqnarray}
+ p(\alpha | X ) = \gauraw{\mu}{\mu_N}{\sigma_N} \nonumber
+\end{eqnarray}
+
+(b) the maximum-a-posteriori
+
+We can simply take the log of the posteriori, and take the derivative and set it zero to get the maximum-a-posteriori.
+
+
+\begin{eqnarray}
+\mu_{MAP} = \mu_N = \frac{\mu_p\sigma^2 + \sum_{i=1}^{N} \sigma_p^2x_i}{\sigma^2 + N\sigma_p^2} \nonumber
+\end{eqnarray}
+
+\end{document}
+
+

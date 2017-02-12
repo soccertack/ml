@@ -1,4 +1,4 @@
-PAPER = hw2-2-sol
+PAPER = hw2-3-sol
 TEX = $(wildcard *.tex)
 BIB = references.bib
 FIGS = $(wildcard figures/*.pdf figures/*.png graphs/*.pdf graphs/*.png)
@@ -11,6 +11,7 @@ $(PAPER).pdf: $(TEX) $(FIGS)
 	bibtex $(PAPER)
 	pdflatex $(PAPER)
 	pdflatex $(PAPER)
+	rm -f *.aux *.bbl *.blg *.log *.out
 
 clean:
 	rm -f *.aux *.bbl *.blg *.log *.out $(PAPER).pdf

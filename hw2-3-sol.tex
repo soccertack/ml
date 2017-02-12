@@ -1,0 +1,124 @@
+\documentclass[11pt]{article}
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage{listings}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{textcomp}
+\usepackage{graphicx}
+\usepackage{underscore}
+\lstset{%
+  basicstyle=\small\ttfamily,
+  mathescape=true,
+  upquote=true,
+}
+
+\usepackage{amsmath,amsbsy,amsfonts,amssymb,amsthm,color,dsfont,mleftright,commath}
+
+\def\ddefloop#1{\ifx\ddefloop#1\else\ddef{#1}\expandafter\ddefloop\fi}
+
+% \bbA, \bbB, ...
+\def\ddef#1{\expandafter\def\csname bb#1\endcsname{\ensuremath{\mathbb{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+
+% \cA, \cB, ...
+\def\ddef#1{\expandafter\def\csname c#1\endcsname{\ensuremath{\mathcal{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+
+% \vA, \vB, ..., \va, \vb, ...
+\def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\ddefloop
+
+% \valpha, \vbeta, ...,  \vGamma, \vDelta, ...,
+\def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{\csname #1\endcsname}}}}
+\ddefloop {alpha}{beta}{gamma}{delta}{epsilon}{varepsilon}{zeta}{eta}{theta}{vartheta}{iota}{kappa}{lambda}{mu}{nu}{xi}{pi}{varpi}{rho}{varrho}{sigma}{varsigma}{tau}{upsilon}{phi}{varphi}{chi}{psi}{omega}{Gamma}{Delta}{Theta}{Lambda}{Xi}{Pi}{Sigma}{varSigma}{Upsilon}{Phi}{Psi}{Omega}{ell}\ddefloop
+
+\newcommand\braces[1]{\{#1\}}
+
+\theoremstyle{definition}
+\newtheorem{problem}{Problem}
+\newenvironment{solution}{\noindent\emph{Solution.}}{\hfill$\square$}
+
+%-------------------------------------------------------------------------------
+
+\title{COMS 4771 Spring 2017 Homework 2}
+\author{Jin Tack Lim, jl4312
+  }
+\date{%
+  }
+
+\begin{document}
+\maketitle
+
+
+%-------------------------------------------------------------------------------
+% \frac{1}{{ \sqrt {2\pi \sigma ^2} }}e^{{{ - \left( {x - \mu } \right)^2 } \mathord{\left/ {\vphantom {{ - \left( {x - \mu } \right)^2 } {2\sigma ^2 }}} \right. \kern-\nulldelimiterspace} {2\sigma ^2 }}}
+
+\newcommand{\gau}[3]{
+$\frac{1}{{ \sqrt {2\pi #3 ^2} }}e^{ \frac { - \left( {#1 - #2 } \right)^2 } {2#3 ^2}}$
+}
+
+\newcommand{\gauraw}[3]{
+\frac{1}{{ \sqrt {2\pi #3 ^2} }}e^{ \frac { - \left( {#1 - #2 } \right)^2 } {2#3 ^2}}
+}
+
+
+Problem 3
+
+(a) Exponential distribution
+
+[Posterior]
+
+The given prior is the gamma distribution with $\alpha = 4$ and $\beta = 1$
+\begin{equation*}
+\begin{split}
+ p(\alpha | X ) & =  \frac{p(\alpha)p(X|\alpha)}{p(X)} \\
+ & = \frac{\frac{\lambda^3 e^{-\lambda}}{6} \prod_{i=1}^{N} \lambda e^{-\lambda x_i}} {p(X)} \\
+ & \propto {\lambda^{N+3} e^{-\lambda} e^{\sum_{i=1}^{N} x_i}} \\
+ & \propto {\lambda^{(N+4) -1} e^{-\lambda(1+\sum_{i=1}^{N} x_i)} } 
+\end{split}
+\end{equation*}
+Therefore
+\begin{eqnarray}
+ p(\alpha | X ) =  Gamma(\lambda; N+4, 1+\sum_{i=1}^{N} x_i) \nonumber \\
+= \frac{1}{\Gamma(N+4)} \lambda^{N+3} e^{-\lambda(1+\sum_{i=1}^{N} x_i}
+\end{eqnarray}
+
+
+[EAP]
+
+Mean of the gamma distribution $E[Gamma(\lambda;\alpha, \beta)] = \frac{\alpha}{\beta}$
+
+Therefore
+\begin{eqnarray}
+EAP = \frac{N+4}{1+\sum_{i=1}^{N} x_i)}
+\end{eqnarray}
+
+(b) Coin problem
+
+[Posterior]
+\begin{eqnarray}
+ p(\alpha | X ) =  \frac{p(\alpha)p(X|\alpha)}{p(X)} \nonumber
+\end{eqnarray}
+Let's say $N_1$ is the number of heads out of N trials.
+\begin{eqnarray}
+= \frac{30\alpha^2(1-\alpha)^2\alpha^{N_1} (1-\alpha)^{N-{N_1}}}{p(X)} \nonumber \\
+= \frac{30\alpha^{N_1+2} (1-\alpha)^{N-{N_1}+2}}{p(X)} \nonumber \\
+= \frac{\alpha^{N_1+2} (1-\alpha)^{N-{N_1}+2}}{c(N_1 +2, N - N_1 +2)} \nonumber
+\end{eqnarray}
+where c(m, k) is defined as following
+\begin{eqnarray}
+c(m, k) = \frac{m!k!}{(m+k+1)!} \nonumber
+\end{eqnarray}
+
+[EAP]
+\begin{eqnarray}
+EAP = E[Posterior] \nonumber \\
+= E[\frac{\alpha^{N_1+2} (1-\alpha)^{N-{N_1}+2}}{c(N_1 +2, N - N_1 +2)}] \nonumber \\
+= \frac{\int_{0}^{1}\alpha \alpha^{N_1+2} (1-\alpha)^{N-{N_1}+2} d\alpha}{c(N_1 +2, N - N_1 +2)} \nonumber \\
+= \frac{c(N_1 +3, N - N_1 +2)}{c(N_1 +2, N - N_1 +2)} \nonumber \\
+= \frac{N_1 + 3}{N_1 + 5}
+\end{eqnarray}
+
+\end{document}
+
+
