@@ -82,7 +82,7 @@ Therefore
 \begin{equation*}
 \begin{split}
  p(\alpha | X ) & =  Gamma(\lambda; N+4, 1+\sum_{i=1}^{N} x_i)  \\
-& = \frac{1}{\Gamma(N+4)} \lambda^{N+3} e^{-\lambda(1+\sum_{i=1}^{N} x_i}
+& = \frac{(1+\sum_{i=1}^{n} x_i)^{N+4}}{\Gamma(N+4)} \lambda^{N+3} e^{-\lambda(1+\sum_{i=1}^{n} x_i)}
 \end{split}
 \end{equation*}
 
@@ -125,10 +125,18 @@ EAP & = E[Posterior]  \\
 & = E[\frac{\alpha^{N_1+2} (1-\alpha)^{N-{N_1}+2}}{c(N_1 +2, N - N_1 +2)}]  \\
 & = \frac{\int_{0}^{1}\alpha \alpha^{N_1+2} (1-\alpha)^{N-{N_1}+2} d\alpha}{c(N_1 +2, N - N_1 +2)}  \\
 & = \frac{c(N_1 +3, N - N_1 +2)}{c(N_1 +2, N - N_1 +2)}  \\
-& = \frac{N_1 + 3}{N_1 + 5}
+& = \frac{N_1 + 3}{N + 6}
 \end{split}
 \end{equation*}
 
-\end{document}
+References
 
+[1] https://www.probabilitycourse.com/chapter9/9_1_1_prior_and_posterior.php
+
+[2] Bishop 2.3
+
+[3] https://en.wikipedia.org/wiki/Gamma_function
+
+[4] http://web.cse.ohio-state.edu/~kulis/teaching/788_sp12/scribe_notes/lecture3.pdf
+\end{document}
 
