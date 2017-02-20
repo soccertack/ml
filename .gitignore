@@ -1,4 +1,5 @@
 *.txt
 *.DS_Store
 .vim_mru_files
+*.pyc
 __pycache__
