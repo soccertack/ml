@@ -40,7 +40,7 @@
 
 %-------------------------------------------------------------------------------
 
-\title{COMS 4771 Spring 2017 Homework 2}
+\title{COMS 4771 Spring 2017 Homework 3}
 \author{Jin Tack Lim, jl4312
   }
 \date{%
@@ -64,56 +64,49 @@ $\frac{1}{{ \sqrt {2\pi #3 ^2} }}e^{ \frac { - \left( {#1 - #2 } \right)^2 } {2#
 
 Problem 2
 
-(a) Posteriori:
-\begin{eqnarray}
- p(\alpha | X ) \propto p(\alpha)p(X|\alpha) \nonumber 
-\end{eqnarray}
-\begin{eqnarray}
- = \gauraw{\mu}{\mu_p}{\sigma_p} \prod_{i=1}^{N} \gauraw{x_i}{\mu}{\sigma} \nonumber
-\end{eqnarray}
-(Remove/Add constant terms to make the following term)
-\begin{eqnarray}
- \propto exp\Bigg\{ - \frac {\mu - \frac{\mu_p\sigma^2 + \sum_{i=1}^{N} \sigma_p^2x_i}{\sigma^2 + N\sigma_p^2}}
-		{2 \frac{\sigma_p^2\sigma^2}{\sigma^2 + N\sigma_p^2}} \Bigg\} \nonumber
-\end{eqnarray}
+(a)
 
-Once we define
-\begin{eqnarray}
-\sigma_N = \frac{\sigma_p^2\sigma^2}{\sigma^2 + N\sigma_p^2} \nonumber \\
-\mu_N = \frac{\mu_p\sigma^2 + \sum_{i=1}^{N} \sigma_p^2x_i}{\sigma^2 + N\sigma_p^2} \nonumber
-\end{eqnarray}
+Constraint: $\sum_{i=d}^{D} x_d = C$
 
-then,
-\begin{eqnarray}
- p(\alpha | X ) \propto exp{\frac{-(\mu - \mu_N)^2}{2\sigma_N^2}} \nonumber 
-\end{eqnarray}
+If we take derivatives for each dimension d,
 
-We can apply the Gaussian integral, and get the posteriori.
-\begin{eqnarray}
- p(\alpha | X ) = \gauraw{\mu}{\mu_N}{\sigma_N} \nonumber
-\end{eqnarray}
+$\frac{d}{x_d} = \lambda$
 
-(b) the maximum-a-posteriori
+We can plug this to the Constraint equation, and get
 
-We can simply take the log of the posteriori, and take the derivative and set it zero to get the maximum-a-posteriori.
+$\frac{1}{\lambda} = \frac {2C}{D(D+1)}$
+
+Therefore
+
+$ x_d = \frac{2Cd}{D(D+1)}$
+
+and Maximum value of f(x) is
+
+$$\boxed{\sum_{d=1}^{D}d log \frac{2Cd}{D(D+1)}}$$
 
 
-\begin{eqnarray}
-\mu_{MAP} = \mu_N = \frac{\mu_p\sigma^2 + \sum_{i=1}^{N} \sigma_p^2x_i}{\sigma^2 + N\sigma_p^2} \nonumber
-\end{eqnarray}
+(b)
 
-(c) expected-a-posteriori value
+Constraint: $\sum_{d=1}^{D} x_i^2 \leq 1$
 
-Given that the posteriori is the Gaussian distribution, we can easily tell that the expected value is the mean. 
-\begin{eqnarray}
-E[posteriori] = \mu_N = \frac{\mu_p\sigma^2 + \sum_{i=1}^{N} \sigma_p^2x_i}{\sigma^2 + N\sigma_p^2} \nonumber
-\end{eqnarray}
+So, these are all equations and inequalities we have.
 
-References
+$ \frac {1}{x_d} = \lambda 2x_d $ for each dimension d.
 
-[1] https://www.probabilitycourse.com/chapter9/9_1_1_prior_and_posterior.php
+$\sum_{d=1}^{D} x_d^2 \leq 1$
 
-[2] Bishop 2.3
+$\lambda (\sum_{i=d}^{D} x_d^2 -1 ) = 0 $
+
+From the first equation, if $\lambda$ is zero, then all $x_i$ goes to infinity which does not satisfy the second inequality. So $\sum_{d=1}^{D} x_d^2 =1$.
+
+Then, by solving above equations,
+
+$x_d = \sqrt{\frac{2d}{D(D+1)}}$
+
+and Maximum value of f(x) is
+
+$$\boxed{\sum_{d=1}^{D}d log \sqrt{\frac{2d}{D(D+1)}}}$$
+
 
 \end{document}
 
