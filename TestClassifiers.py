@@ -1,26 +1,9 @@
 from SimClasses import *
 from Classifier_A import *
 from Classifier_B import *
-from sklearn.linear_model import LogisticRegression
+from Classifier_C import *
 from sklearn import metrics
-import pprint
 import collections
-import collections
-
-test_N = 100
-
-def AToD(train_X, train_Y, test_X, test_Y, test_N):
-
-	correct_label = {}
-	class_a = Classifier_A(train_X, train_Y)
-	predicted_Y = class_a.Classify(test_X)
-	correct_label['a'] = int(metrics.accuracy_score(test_Y, predicted_Y)*test_N)
-
-	class_b = Classifier_B(train_X, train_Y)
-	predicted_Y = class_b.Classify(test_X)
-	correct_label['b'] = int(metrics.accuracy_score(test_Y, predicted_Y)*test_N)
-
-	return correct_label
 
 def Get_Classifier(classifier, train_X, train_Y):
 
@@ -28,6 +11,8 @@ def Get_Classifier(classifier, train_X, train_Y):
 		class_obj = Classifier_A(train_X, train_Y)
 	elif classifier == 'B':
 		class_obj = Classifier_B(train_X, train_Y)
+	elif classifier == 'C':
+		class_obj = Classifier_C(train_X, train_Y)
 	else:
 		print ("Undefined class", classifier)
 		sys.exit()
@@ -35,6 +20,7 @@ def Get_Classifier(classifier, train_X, train_Y):
 
 def RunTest(N, D, Distance, classifier):
 
+	test_N = 100
 	a = SimClasses()
 	train_X, train_Y = a.GetData(N, D, Distance)
 	test_X, test_Y = a.GetData(test_N, D, Distance)
@@ -57,7 +43,7 @@ def RunAndSave(N, D, Distance, classifier, item, var, outDict, paramDict):
 
 def TestClassifiers():
 	
-	classes = ["A", "B"]
+	classes = ["A", "B", 'C']
 	outDict = collections.OrderedDict()
 	paramDict = collections.OrderedDict()
 

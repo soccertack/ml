@@ -2,6 +2,7 @@ from timeit import default_timer as timer
 from SimClasses import *
 from sklearn.linear_model import LogisticRegression
 from sklearn.linear_model import perceptron
+from sklearn.svm import LinearSVC
 from sklearn import metrics
 
 class Classifier:
