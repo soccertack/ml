@@ -9,6 +9,8 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 PICKLE_RESULT = "Results.pkl"
 PICKLE_PARAMS = "Parameters.pkl"
+test_dict = {}
+training_dict = {}
 
 def Get_Classifier(classifier, train_X, train_Y):
 
@@ -23,12 +25,26 @@ def Get_Classifier(classifier, train_X, train_Y):
 		sys.exit()
 	return class_obj
 
+def GetData(N, D, Distance, data_dict):
+	if (N, D, Distance) not in data_dict:
+		a = SimClasses()
+		X, Y = a.GetData(N, D, Distance)
+		data_dict[(N, D, Distance)] = (X, Y)
+	return data_dict[(N, D, Distance)][0], data_dict[(N, D, Distance)][1]
+		
+def GetTrainingData(N, D, Distance):
+	return GetData(N, D, Distance, training_dict)
+
+def GetTestData(N, D, Distance):
+	return GetData(N, D, Distance, test_dict)
+
+
 def RunTest(N, D, Distance, classifier):
 
 	test_N = 100
 	a = SimClasses()
-	train_X, train_Y = a.GetData(N, D, Distance)
-	test_X, test_Y = a.GetData(test_N, D, Distance)
+	train_X, train_Y = GetTrainingData(N, D, Distance)
+	test_X, test_Y = GetTestData(test_N, D, Distance)
 	class_obj = Get_Classifier(classifier, train_X, train_Y)
 	predicted_Y = class_obj.Classify(test_X)
 	return metrics.accuracy_score(test_Y, predicted_Y), class_obj.Get_Params(), \
