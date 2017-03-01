@@ -4,6 +4,10 @@ from Classifier_B import *
 from Classifier_C import *
 from sklearn import metrics
 import collections
+import pickle
+
+PICKLE_RESULT = "Results.pkl"
+PICKLE_PARAMS = "Parameters.pkl"
 
 def Get_Classifier(classifier, train_X, train_Y):
 
@@ -76,6 +80,12 @@ def TestClassifiers():
 	for k, v in outDict.items():
 		if k[0] == 'i':
 			print (k, v)
+
+	with open(PICKLE_RESULT, 'wb') as f:
+		pickle.dump(outDict, f)
+	with open(PICKLE_PARAMS, 'wb') as f:
+		pickle.dump(paramDict, f)
+
 # Plot input data
 '''
 	N = 10000	# Data size
