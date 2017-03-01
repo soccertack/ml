@@ -2,6 +2,7 @@ from SimClasses import *
 from Classifier_A import *
 from Classifier_B import *
 from Classifier_C import *
+from Classifier_D import *
 from sklearn import metrics
 import collections
 import pickle
@@ -20,6 +21,8 @@ def Get_Classifier(classifier, train_X, train_Y):
 		class_obj = Classifier_B(train_X, train_Y)
 	elif classifier == 'C':
 		class_obj = Classifier_C(train_X, train_Y)
+	elif classifier == 'D':
+		class_obj = Classifier_D(train_X, train_Y)
 	else:
 		print ("Undefined class", classifier)
 		sys.exit()
@@ -64,7 +67,7 @@ def RunAndSave(N, D, Distance, classifier, item, var, outDict, paramDict):
 
 def TestClassifiers():
 	
-	classes = ["A", "B", 'C']
+	classes = ["A", "B", 'C', 'D']
 	items = ['a', 'b', 'c']
 	measurements = ['i', 'ii']
 	outDict = collections.OrderedDict()
