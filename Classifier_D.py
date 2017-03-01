@@ -6,6 +6,7 @@ class Classifier_D(Classifier):
 	def __init__(self, train_X, train_Y):
 
 		start = timer()
+		train_X = np.insert(train_X, 0, 1, axis = 1)
 		w = np.zeros(train_X.shape[1])
 		train_size = train_X.shape[0]
 
@@ -27,6 +28,7 @@ class Classifier_D(Classifier):
 		return self.coef_
 
 	def Classify(self, test_X):
+		test_X = np.insert(test_X, 0, 1, axis = 1)
 		return (np.sign(np.dot(test_X, self.coef_.T))+1)/2
 
 
