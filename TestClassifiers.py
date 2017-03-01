@@ -88,7 +88,8 @@ def TestClassifiers():
 			RunAndSave(N, D, Distance, classifier, item, Distance, outDict, paramDict)
 
 	for k, v in outDict.items():
-		print (k, v)
+		if k[0] == 'i':
+			print (k, v)
 # Plot input data
 '''
 	N = 10000	# Data size

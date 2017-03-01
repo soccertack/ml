@@ -15,3 +15,7 @@ class Classifier:
 	def Get_Compute_Times(self):
 		return self.time
 
+	def Classify(self, test_X):
+		predicted = self.model.predict(test_X)
+		return predicted
+
