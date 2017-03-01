@@ -9,7 +9,6 @@ class Classifier_A(Classifier):
 		end = timer()
 
 		self.time = (end - start)
-		self.coef = self.model.get_params()
 
 '''
 # References

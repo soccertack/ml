@@ -4,6 +4,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.linear_model import perceptron
 from sklearn.svm import LinearSVC
 from sklearn import metrics
+import numpy as np
 
 class Classifier:
 	def __init__(self, train_X, train_Y):
@@ -11,7 +12,7 @@ class Classifier:
 		self.coef = 0
 
 	def Get_Params(self):
-		return self.coef
+		return np.array(self.model.coef_)
 
 	def Get_Compute_Times(self):
 		return self.time
