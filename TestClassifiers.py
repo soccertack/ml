@@ -5,6 +5,7 @@ from Classifier_C import *
 from sklearn import metrics
 import collections
 import pickle
+from matplotlib.backends.backend_pdf import PdfPages
 
 PICKLE_RESULT = "Results.pkl"
 PICKLE_PARAMS = "Parameters.pkl"
@@ -48,32 +49,46 @@ def RunAndSave(N, D, Distance, classifier, item, var, outDict, paramDict):
 def TestClassifiers():
 	
 	classes = ["A", "B", 'C']
+	items = ['a', 'b', 'c']
+	measurements = ['i', 'ii']
 	outDict = collections.OrderedDict()
 	paramDict = collections.OrderedDict()
+	varDict = {}
+	item_label_Dict = {}
+	fixed_Dict = {}
 
 	for classifier in classes:
 
 		# a) Fixed N and Fixed Distance
-		N = 10000	# Data size
+		item = 'a'
+		N = 1000	# Data size
 		Distance = 1	# stdev for Tail distribution
 		D_array = [1, 2, 3, 4, 5]
-		item = 'a'
+		varDict[item] = D_array
+		item_label_Dict[item] = 'D'
+		fixed_Dict[item] = "N: " + str(N) + ", Distance: " + str(Distance)
 		for D in D_array:
 			RunAndSave(N, D, Distance, classifier, item, D, outDict, paramDict)
 
 		# b) Fixed D and Fixed Distance
+		item = 'b'
 		Distance = 1	# stdev for Tail distribution
 		D = 2
-		N_array = [5, 10, 100, 1000, 10000]
-		item = 'b'
+		N_array = [10, 100, 500, 1000, 10000]
+		varDict[item] = N_array 
+		item_label_Dict[item] = 'N'
+		fixed_Dict[item] = "D: " + str(D) + ", Distance: " + str(Distance)
 		for N in N_array:
 			RunAndSave(N, D, Distance, classifier, item, N, outDict, paramDict)
 
 		# c) Fixed D and Fixed N 
+		item = 'c'
 		N = 1000	# Data size
 		D = 2
 		Dist_array = [0, 1, 2, 3, 4]
-		item = 'c'
+		varDict[item] = Dist_array 
+		item_label_Dict[item] = 'Distance'
+		fixed_Dict[item] = "D: " + str(D) + ", N: " + str(N)
 		for Distance in Dist_array:
 			RunAndSave(N, D, Distance, classifier, item, Distance, outDict, paramDict)
 
@@ -85,6 +100,30 @@ def TestClassifiers():
 		pickle.dump(outDict, f)
 	with open(PICKLE_PARAMS, 'wb') as f:
 		pickle.dump(paramDict, f)
+
+	
+	x = [0, 1, 2, 3, 4]
+	for measurement in measurements:
+		for item in items:
+			X_x =varDict[item] 
+			plt.title("Measurement " + measurement + ", item " + item + "\n" +  fixed_Dict[item])
+			plt.xlabel(item_label_Dict[item])
+			for classifier in classes:
+				X_y = []
+				for var in varDict[item]:
+					X_y.append(outDict[(measurement, classifier, item, var)])
+				plt.plot(x, X_y, "ro")
+				plt.plot(x, X_y, label=classifier)
+				plt.xticks(x,X_x)
+			plt.legend()
+
+			result_plot = PdfPages("Plot_" + measurement +"_" + item +".pdf")
+			result_plot.savefig()
+			result_plot.close()
+
+			plt.show()
+
+	sys.exit()
 
 # Plot input data
 '''
