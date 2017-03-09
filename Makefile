@@ -1,4 +1,4 @@
-PAPER = hw3-2-sol
+PAPER = hw4-sol
 TEX = $(wildcard *.tex)
 BIB = references.bib
 FIGS = $(wildcard figures/*.pdf figures/*.png graphs/*.pdf graphs/*.png)

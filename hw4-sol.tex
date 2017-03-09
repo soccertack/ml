@@ -40,7 +40,7 @@
 
 %-------------------------------------------------------------------------------
 
-\title{COMS 4771 Spring 2017 Homework 1}
+\title{COMS 4771 Spring 2017 Homework 4}
 \author{Jin Tack Lim, jl4312
   }
 \date{%
@@ -52,25 +52,46 @@
 
 %-------------------------------------------------------------------------------
 
-Problem 3.
+Problem 1.
 
-This is Poisson distribution as discussed in the first lecture.
-\bigbreak
+(a) 
 
-Loss function = $-\log \frac{{e^{ - f(x) } f(x) ^y }}{{y!}}$ where x is tumor size, $f(x) = \lambda$ and y is the time from the patient’s admission till them passing away.
-\bigbreak
+Consider the case in Figure~\ref{fig:one-rest}. There are three cases: C1, C2 and C3. Using
+'one vs. rest', we can draw three lines, which classify a sample to either a
+specific class or other classes. The whole space is divided into seven regions.
+Out of seven, there are three regions that is classified to a specific class
+clearly: R2 is C2, R4 is C3 and R6 is C1.  However there is a region that
+doesn't fit into any class: R1. Also, there are regions that are classified
+into multiple classes: R3, R5, R7.
 
-When we have n samples, log likely hood is 
-\bigbreak
+So, this example showed that 'one vs. rest' has some drawbacks.
 
-$ \log \prod_{i=1}^{\infty} \frac{{e^{ - f(x) } f(x) ^y }}{{y!}}$
-\bigbreak
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{one-rest}
+  \caption{One vs. rest}
+  \label{fig:one-rest}
+\end{figure}
 
-and this is maximized when $ f(x) = \lambda  = \frac{x_1 + x_2 + ... + x_n}{n}$
-\bigbreak
+(b)
 
-Empirical risk R = $ \frac{1}{n} \sum_{i=1}^{n} -\log \frac{{e^{ - f(x_i) } f(x_i) ^{y_i} }}{{y_i!}} $
-\bigbreak
+Consider the case in Figure~\ref{fig:one-one}. There are three cases: C1, C2 and C3. Using
+'one vs. one', we can draw three lines (3*2/2), which classify a sample to one
+of two classes for each pair of classes.  The whole space is divided into seven
+regions.  Out of seven, six regions are clearly classified into a specific
+class: R6 and R7 are C1, R2 and R3 are C2, R4 and R5 are C3.  However R1 can't
+be classified because there is no single winner: 1 vote for each classes.
+
+So, this example showed that 'one vs. one' also has some drawbacks.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{one-one}
+  \caption{One vs. One}
+  \label{fig:one-one}
+\end{figure}
+
+(c)
 
 \end{document}
 
