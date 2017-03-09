@@ -2,6 +2,7 @@ from SimClasses import *
 from Classifier_A import *
 from Classifier_B import *
 from Classifier_C import *
+from Classifier_D import *
 from sklearn import metrics
 import collections
 import pickle
@@ -9,6 +10,8 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 PICKLE_RESULT = "Results.pkl"
 PICKLE_PARAMS = "Parameters.pkl"
+test_dict = {}
+training_dict = {}
 
 def Get_Classifier(classifier, train_X, train_Y):
 
@@ -18,17 +21,33 @@ def Get_Classifier(classifier, train_X, train_Y):
 		class_obj = Classifier_B(train_X, train_Y)
 	elif classifier == 'C':
 		class_obj = Classifier_C(train_X, train_Y)
+	elif classifier == 'D':
+		class_obj = Classifier_D(train_X, train_Y)
 	else:
 		print ("Undefined class", classifier)
 		sys.exit()
 	return class_obj
 
+def GetData(N, D, Distance, data_dict):
+	if (N, D, Distance) not in data_dict:
+		a = SimClasses()
+		X, Y = a.GetData(N, D, Distance)
+		data_dict[(N, D, Distance)] = (X, Y)
+	return data_dict[(N, D, Distance)][0], data_dict[(N, D, Distance)][1]
+		
+def GetTrainingData(N, D, Distance):
+	return GetData(N, D, Distance, training_dict)
+
+def GetTestData(N, D, Distance):
+	return GetData(N, D, Distance, test_dict)
+
+
 def RunTest(N, D, Distance, classifier):
 
 	test_N = 100
 	a = SimClasses()
-	train_X, train_Y = a.GetData(N, D, Distance)
-	test_X, test_Y = a.GetData(test_N, D, Distance)
+	train_X, train_Y = GetTrainingData(N, D, Distance)
+	test_X, test_Y = GetTestData(test_N, D, Distance)
 	class_obj = Get_Classifier(classifier, train_X, train_Y)
 	predicted_Y = class_obj.Classify(test_X)
 	return metrics.accuracy_score(test_Y, predicted_Y), class_obj.Get_Params(), \
@@ -48,7 +67,7 @@ def RunAndSave(N, D, Distance, classifier, item, var, outDict, paramDict):
 
 def TestClassifiers():
 	
-	classes = ["A", "B", 'C']
+	classes = ["A", "B", 'C', 'D']
 	items = ['a', 'b', 'c']
 	measurements = ['i', 'ii']
 	outDict = collections.OrderedDict()
@@ -93,8 +112,7 @@ def TestClassifiers():
 			RunAndSave(N, D, Distance, classifier, item, Distance, outDict, paramDict)
 
 	for k, v in outDict.items():
-		if k[0] == 'i':
-			print (k, v)
+		print (k, v)
 
 	with open(PICKLE_RESULT, 'wb') as f:
 		pickle.dump(outDict, f)

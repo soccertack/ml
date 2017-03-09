@@ -111,10 +111,6 @@ def TestClassifiers():
 		for Distance in Dist_array:
 			RunAndSave(N, D, Distance, classifier, item, Distance, outDict, paramDict)
 
-	for k, v in outDict.items():
-		if k[0] == 'i':
-			print (k, v)
-
 	with open(PICKLE_RESULT, 'wb') as f:
 		pickle.dump(outDict, f)
 	with open(PICKLE_PARAMS, 'wb') as f:
@@ -141,19 +137,3 @@ def TestClassifiers():
 			result_plot.close()
 
 			plt.show()
-
-	sys.exit()
-
-# Plot input data
-'''
-	N = 10000	# Data size
-	X_x = train_X[:,0]
-	X_x.shape = (N, 1)
-	X_y = train_X[:,1]
-	X_y.shape = (N, 1)
-
-	plt.scatter(X_x, X_y, marker='+', s=1)
-	plt.show()
-'''
-
-TestClassifiers()
