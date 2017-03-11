@@ -6,6 +6,7 @@
 \usepackage{textcomp}
 \usepackage{graphicx}
 \usepackage{underscore}
+\usepackage{float}
 \lstset{%
   basicstyle=\small\ttfamily,
   mathescape=true,
@@ -68,10 +69,12 @@ So, this example showed that 'one vs. rest' has some drawbacks.
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=\textwidth]{one-rest}
+  \includegraphics[width=10cm]{one-rest}
   \caption{One vs. rest}
   \label{fig:one-rest}
 \end{figure}
+
+\pagebreak
 
 (b)
 
@@ -86,12 +89,47 @@ So, this example showed that 'one vs. one' also has some drawbacks.
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=\textwidth]{one-one}
+  \includegraphics[width=10cm]{one-one}
   \caption{One vs. One}
   \label{fig:one-one}
 \end{figure}
 
+\pagebreak
+
 (c)
 
+\pagebreak
+
+Problem 2.
+
+\bigskip
+
+(a)
+$\sum_{i=1}^{k}p_i \log p_i$
+
+This is the Entropy without the negative sign.
+
+This is how I got the expectation.
+
+(1) When the value of $y_i$ is $j$, then its contribution is $\log p_j$.
+
+(2) The probability that $y_i$ becomes $j$ is $p_j$.
+
+(3) Therefore the expectation is the sum of $p_j \log p_j$ over all possible j (1,...,k)
+
+\bigskip
+(b)
+
+$ \frac{\sum_{i=1}^{k} m_i \log q_i}{N} $ where $m_i$ represents the number of $i$ class samples in $Y$
+
+\bigskip
+
+Rationale: Now that we know the real probabilities and the real assignments for each $y_i$ in Y, we can compute the log-likelihood, which is
+
+$ \sum_{i=1}^{k} m_i \log q_i $ where $m_i$ represents the number of $i$ class samples in $Y$
+
+We have N elements in $Y$, so the expection of each $y_i$ would be 
+
+$ \frac{\sum_{i=1}^{k} m_i \log q_i}{N} $
 \end{document}
 
