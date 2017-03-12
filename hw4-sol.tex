@@ -98,6 +98,40 @@ So, this example showed that 'one vs. one' also has some drawbacks.
 
 (c)
 
+1. The primal and quadratic problem:
+
+\begin{equation*}
+\arg \min_{w,b} \frac{1}{2} \sum_{m=1}^{k} \norm{w}^2 + C \sum_{i=1}^{N}\xi_i \quad \text{such that}
+\end{equation*}
+\begin{equation*}
+\quad y_i (w_m^T x_i + b) -1 + \xi_i \ge 0 \quad \text{for each dimension m (from 1 to k)}
+\end{equation*}
+
+With Lagrange $\alpha$:
+
+\begin{equation*}
+\arg \min_{w,b} \frac{1}{2} \sum_{m=1}^{k} \norm{w}^2 + C \sum_{i=1}^{N}\xi_i
+- \sum_{i=1}^{N}\sum_{m=1}^{k}\alpha_{i}^{m}(y_i(w_m^T x_i + b) -1 + \xi_i)
+- \sum_{i=1}^{N}\beta_i\xi_i
+\end{equation*}
+all $\alpha$ and $\beta \ge 0$
+
+\bigskip
+
+
+2. The dual problem:
+%We first define a new notation $A_i$
+%\begin{equation*}
+%A_i = \sum_{m=1}^{k} \alpha_{i}^{m}
+%\end{equation*}
+
+\begin{equation*}
+\arg \max_\alpha \sum_{i,m} \alpha_{i}^{m} - \frac{1}{2} \sum_{i,j,m} \alpha_{i}^{m} \alpha_{j}^{m} y_i y_j x_i^T x_j
+\end{equation*}
+\begin{equation*}
+\text{subject to} \quad 0 \le \sum_{m}\alpha_{i}^{m} \le C \quad \text{and} \sum_{i=1}^{N}\sum_{m=1}^{k} \alpha_{i}^{m} y_i =0 
+\end{equation*}
+
 \pagebreak
 
 Problem 2.
@@ -105,7 +139,10 @@ Problem 2.
 \bigskip
 
 (a)
-$\sum_{i=1}^{k}p_i \log p_i$
+\begin{equation*}
+\sum_{i=1}^{k}p_i \log p_i
+\end{equation*}
+
 
 This is the Entropy without the negative sign.
 
@@ -120,7 +157,11 @@ This is how I got the expectation.
 \bigskip
 (b)
 
-$ \frac{\sum_{i=1}^{k} m_i \log q_i}{N} $ where $m_i$ represents the number of $i$ class samples in $Y$
+\begin{equation*}
+ \frac{\sum_{i=1}^{k} m_i \log q_i}{N} 
+\end{equation*}
+
+ where $m_i$ represents the number of $i$ class samples in $Y$
 
 \bigskip
 
