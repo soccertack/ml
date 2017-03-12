@@ -172,5 +172,72 @@ $ \sum_{i=1}^{k} m_i \log q_i $ where $m_i$ represents the number of $i$ class s
 We have N elements in $Y$, so the expection of each $y_i$ would be 
 
 $ \frac{\sum_{i=1}^{k} m_i \log q_i}{N} $
-\end{document}
 
+\pagebreak
+
+Problem 3.
+
+\bigskip
+a) The marginal distribution is the binomial distribution. More specifically, the probablity of being weight k is
+\begin{equation*}
+\binom{n}{k}  \Big(\frac{1}{n}\Big)^k \Big({\frac {n-1}{n}}\Big)^{n-k}
+\end{equation*}
+
+The correlation of each weight is, intuitively, if one of the weight is k, then the other weight should be equal to or less than n-k. In other words, the distribution of the former is ~Bin(n, p) and the latter is ~Bin(n-k, p)
+
+\bigskip
+b)
+This is a hard problem, so I read some papers[1][2][3] and borrowed their idea.
+
+Step 1. Show that the error $\epsilon$ from the booster(i.e. Adaboost) is bounded by the product of $Z_t$.
+\begin{equation*}
+\epsilon = \frac{1}{m} * {\text{number of mispredicted points}} \le \prod_{t} Z_t
+\end{equation*}
+
+Step 2. Show that the product of Z is bounded by the expression with T and $\gamma$.
+\begin{equation*}
+\prod_{t} Z_t \le \exp(-2T\gamma^2)
+\end{equation*}
+
+Step 3. Device the given form in the problem from the step 1 and 2.
+\begin{equation*}
+T = - \frac{\gamma^2}{C\log \epsilon}
+\end{equation*}
+
+\bigskip
+Here are the detailed steps.
+
+Step 1.
+
+\begin{equation*}
+\epsilon = \frac{1}{m} * {\text{number of mispredicted points}} \le 
+\frac{1}{m} \sum_{i} \exp(-y_if(x_i)) =
+\prod_{t} Z_t
+\end{equation*}
+
+The inequality comes from the fact that $\exp(-y_if(x_i)) \ge 1$ if the data point is mispredicted. The equality comes by unraveling the recursive definition of $D_t$
+
+Step 2.
+
+This step is way too much complicated for me to digest.
+
+Step 3.
+
+By combining the result from step 1 and step 2, we can derive this form.
+C in this case is $\frac{1}{2}$
+
+\begin{equation*}
+T \le - \frac {\log \epsilon}{2\gamma^2}
+\end{equation*}
+
+\bigskip
+References
+
+[1] A Decision-Theoretic Generalization of On-Line Learning and an Application to Boosting, Freund and Schapire, 
+http://www.face-rec.org/algorithms/Boosting-Ensemble/decision-theoretic_generalization.pdf
+
+[2] Improved Boosting Algorithms
+Using Confidence-rated Predictions, Schapire and Singer, http://web.cs.iastate.edu/~honavar/singer99improved.pdf
+
+[3] The Boosting Approach to Machine Learning An Overview, Schapire, https://www.cs.princeton.edu/courses/archive/spring07/cos424/papers/boosting-survey.pdf
+\end{document}
