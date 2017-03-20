@@ -158,20 +158,10 @@ This is how I got the expectation.
 (b)
 
 \begin{equation*}
- \frac{\sum_{i=1}^{k} m_i \log q_i}{N} 
+\sum_{i=1}^{k}p_i \log q_i
 \end{equation*}
 
- where $m_i$ represents the number of $i$ class samples in $Y$
-
 \bigskip
-
-Rationale: Now that we know the real probabilities and the real assignments for each $y_i$ in Y, we can compute the log-likelihood, which is
-
-$ \sum_{i=1}^{k} m_i \log q_i $ where $m_i$ represents the number of $i$ class samples in $Y$
-
-We have N elements in $Y$, so the expection of each $y_i$ would be 
-
-$ \frac{\sum_{i=1}^{k} m_i \log q_i}{N} $
 
 \pagebreak
 
