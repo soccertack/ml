@@ -1,15 +1,11 @@
 import numpy as np
-import pickle
 
-INPUT_FILE="Data_y.pkl"
+def predict(test_x):
+	test_y = 0
+	print ("predict function predicts test_y")
+	return test_y 
 
-# Create a dummy input file
-b=np.identity(10)
-f=open(INPUT_FILE,'wb')
-pickle.dump(b, f)
-f.close()
+test_x = 0
+predict(test_x)
 
-f2 = open(INPUT_FILE, 'rb')
-s = pickle.load(f2)
-f2.close()
-print (s)
+
