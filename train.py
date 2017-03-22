@@ -4,6 +4,7 @@ from sklearn.model_selection import KFold
 from SimClasses import *
 from Classifier_C import *
 import itertools
+from sklearn.externals import joblib
 
 # TODO before exam: 
 # 1. Add cross validation code
@@ -20,6 +21,19 @@ def train(tr_x, tr_y):
 	print ("Y data is ", tr_y.shape)
 	print (x_array)
 
+	class_obj = Classifier_C(tr_x, tr_y)
+	my_classifier = class_obj.get_classifier()
+	predicted_Y = class_obj.Classify(tr_x)
+	print ("accuracy from orig: ", metrics.accuracy_score(tr_y, predicted_Y))
+
+
+	joblib.dump(my_classifier, 'filename.pkl') 
+
+	clf = joblib.load('filename.pkl')
+	another_Y = clf.predict(tr_x)
+	print ("accuracy from dup: ", metrics.accuracy_score(tr_y, another_Y))
+	return
+	'''
 	kf = KFold(n_splits=5, shuffle=True)
 	for train, test in kf.split(tr_x):
 		print("%s %s" % (train, test))
@@ -28,6 +42,7 @@ def train(tr_x, tr_y):
 	
 	print ("Train function is supposed to return coefficients")
 	return
+	'''
 
 # Create a dummy input file
 b=np.identity(11)
