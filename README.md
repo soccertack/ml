@@ -1,8 +1,8 @@
 Midterm preparation
 
 [Programming]
-1. Save each plot to pdf
 3. Cleanup data
+4. Maybe need 3D view (3d.py)
 
 [Contents]
 1. List all the techniques we can use.
