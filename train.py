@@ -2,6 +2,7 @@ import numpy as np
 import pickle
 from sklearn.model_selection import KFold
 from SimClasses import *
+from Classifier_C import *
 import itertools
 
 # TODO before exam: 
@@ -67,4 +68,8 @@ for dims in itertools.combinations(range(D), 2):
 	plt.show()
 
 train(x_array, y_array)
+
+# Save the trained classifier into pickle file
+#from sklearn.externals import joblib
+#joblib.dump(clf, 'filename.pkl') 
 
