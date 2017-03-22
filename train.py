@@ -2,6 +2,7 @@ import numpy as np
 import pickle
 from sklearn.model_selection import KFold
 from SimClasses import *
+import itertools
 
 # TODO before exam: 
 # 1. Add cross validation code
@@ -43,7 +44,7 @@ f2.close()
 # This is temp code to get more realistic data
 a = SimClasses()
 N = 10000
-D = 2
+D = 4
 Distance = 5
 x_array, y_array= a.GetData(N, D, Distance)
 
@@ -53,12 +54,17 @@ print (y_array.shape)
 y_array.shape = (N, 1)
 
 colors = ['dummy', 'blue', 'orange']
-for i in range (1,3):
-	# Pick rows with the given class i
-	X_x = x_array[y_array[:,0] == i][:,0]
-	X_y = x_array[y_array[:,0] == i][:,1]
-	plt.scatter(X_x, X_y, marker='.', c=colors[i], s=1)
-plt.show()
+for dims in itertools.combinations(range(D), 2):
+	dim1 = dims[0]
+	dim2 = dims[1]
+	for i in range (1,3):
+		# Pick rows with the given class i
+		X_x = x_array[y_array[:,0] == i][:,dim1]
+		X_y = x_array[y_array[:,0] == i][:,dim2]
+		plt.scatter(X_x, X_y, marker='.', c=colors[i], s=1)
+		plt.xlabel("Dimension "+str(dim1))
+		plt.ylabel("Dimension "+str(dim2))
+	plt.show()
 
 train(x_array, y_array)
 

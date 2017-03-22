@@ -29,7 +29,8 @@ class SimClasses:
 			# TAIL (0)
 			else:
 				mean = np.zeros(D)
-				mean[0] = Distance
+				for j in range(0, D):
+					mean[j] = j+1
 				X[i] = np.random.multivariate_normal(mean, np.identity(D))
 				Y[i] = 2
 		return X, Y
