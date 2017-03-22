@@ -1,0 +1,10 @@
+(100000, 100)
+(100000,)
+(2000, 100)
+(2000,)
+X data dimension is  (2000, 100)
+Y data dimension is  (2000,)
+accuracy from training:  0.5985
+cross validation score [ 0.5175  0.53    0.5325  0.505   0.4975]
+accuracy from dup:  0.5985
+47.78122207301203
