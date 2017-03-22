@@ -7,6 +7,7 @@ from sklearn.externals import joblib
 from predict import *
 from sklearn.svm import LinearSVC
 from sklearn import metrics
+from sklearn.model_selection import cross_val_score
 
 # TODO before exam: 
 # 1. Add cross validation code
@@ -30,19 +31,20 @@ def train(tr_x, tr_y):
 	clf = clf.fit(tr_x, tr_y)
 	predicted_Y = clf.predict(tr_x)
 	print ("accuracy from orig: ", metrics.accuracy_score(tr_y, predicted_Y))
+
+	cross_validation = 5
+	# Cross validation method 1
+	score = cross_val_score(clf, tr_x, tr_y, cv=cross_validation)
+	print ("score", score)
+
+	# Cross validation method 2
+	k_fold = KFold(n_splits=cross_validation)
+	manual_kfold_score = [clf.fit(tr_x[tr_idx], tr_y[tr_idx]).score(tr_x[test_idx], tr_y[test_idx]) for tr_idx, test_idx in k_fold.split(tr_x)]
+	print ("manual kfold score", manual_kfold_score)
+
 	joblib.dump(clf, 'CLASSIFIER_FILE') 
 
 	return
-	'''
-	kf = KFold(n_splits=5, shuffle=True)
-	for train, test in kf.split(tr_x):
-		print("%s %s" % (train, test))
-		print ("Print test data")
-		print (tr_x[test])
-	
-	print ("Train function is supposed to return coefficients")
-	return
-	'''
 
 # Create a dummy input file
 b=np.identity(11)
