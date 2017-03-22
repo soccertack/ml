@@ -44,17 +44,21 @@ f2.close()
 a = SimClasses()
 N = 10000
 D = 2
-Distance = 2
-X, Y = a.GetData(N, D, Distance)
+Distance = 5
+x_array, y_array= a.GetData(N, D, Distance)
 
-X_x = X[:,0]
-X_x.shape = (N, 1)
-X_y = X[:,1]
-X_y.shape = (N, 1)
+# Ensure Dimensions
+print (x_array.shape)
+print (y_array.shape)
+y_array.shape = (N, 1)
 
-plt.scatter(X_x, X_y, marker='+', s=1)
+colors = ['dummy', 'blue', 'orange']
+for i in range (1,3):
+	# Pick rows with the given class i
+	X_x = x_array[y_array[:,0] == i][:,0]
+	X_y = x_array[y_array[:,0] == i][:,1]
+	plt.scatter(X_x, X_y, marker='.', c=colors[i], s=1)
 plt.show()
 
 train(x_array, y_array)
-
 

@@ -31,6 +31,6 @@ class SimClasses:
 				mean = np.zeros(D)
 				mean[0] = Distance
 				X[i] = np.random.multivariate_normal(mean, np.identity(D))
-				Y[i] = 0
+				Y[i] = 2
 		return X, Y
 
