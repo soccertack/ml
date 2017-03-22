@@ -1,6 +1,7 @@
 Midterm preparation
 
 [Programming]
+1. Save each plot to pdf
 3. Cleanup data
 
 [Contents]

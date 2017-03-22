@@ -8,6 +8,8 @@ from predict import *
 from sklearn.svm import LinearSVC
 from sklearn import metrics
 from sklearn.model_selection import cross_val_score
+from matplotlib.backends.backend_pdf import PdfPages
+from timeit import default_timer as timer
 
 # TODO before exam: 
 # 1. Add cross validation code
@@ -46,6 +48,8 @@ def train(tr_x, tr_y):
 
 	return
 
+start = timer()
+
 # Create a dummy input file
 b=np.identity(11)
 f=open(INPUT_X_FILE,'wb')
@@ -81,9 +85,13 @@ for dims in itertools.combinations(range(D), 2):
 		plt.scatter(X_x, X_y, marker='.', c=colors[i], s=1)
 		plt.xlabel("Dimension "+str(dim1))
 		plt.ylabel("Dimension "+str(dim2))
-	plt.show()
+	plot = PdfPages("Plot_" + str(dim1) +"_" + str(dim2) +".pdf")
+	plot.savefig()
+	plot.close()
 
 train(x_array, y_array)
 predicted_Y = predict(x_array)
 print ("accuracy from dup: ", metrics.accuracy_score(y_array, predicted_Y))
 
+end = timer()
+print (end - start)
