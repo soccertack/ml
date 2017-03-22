@@ -1,6 +1,7 @@
 import numpy as np
 import pickle
 from sklearn.model_selection import KFold
+from SimClasses import *
 
 # TODO before exam: 
 # 1. Add cross validation code
@@ -38,6 +39,21 @@ f2.close()
 f2 = open(INPUT_X_FILE, 'rb')
 y_array = pickle.load(f2)
 f2.close()
+
+# This is temp code to get more realistic data
+a = SimClasses()
+N = 10000
+D = 2
+Distance = 2
+X, Y = a.GetData(N, D, Distance)
+
+X_x = X[:,0]
+X_x.shape = (N, 1)
+X_y = X[:,1]
+X_y.shape = (N, 1)
+
+plt.scatter(X_x, X_y, marker='+', s=1)
+plt.show()
 
 train(x_array, y_array)
 
