@@ -67,6 +67,7 @@ for dims in itertools.combinations(range(100), 2):
 	plot = PdfPages("Plot_" + str(dim1) +"_" + str(dim2) +".pdf")
 	plot.savefig()
 	plot.close()
+	plt.close()
 
 train(x_array, y_array)
 predicted_Y = predict(x_array)
