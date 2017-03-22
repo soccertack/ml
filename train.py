@@ -17,6 +17,7 @@ from sklearn import metrics
 
 INPUT_X_FILE="Data_x.pkl"
 INPUT_Y_FILE="Data_y.pkl"
+CLASSIFIER_FILE="Trained_classifier.pkl"
 
 def train(tr_x, tr_y):
 	print ("X data is ", tr_x.shape)
@@ -29,7 +30,7 @@ def train(tr_x, tr_y):
 	clf = clf.fit(tr_x, tr_y)
 	predicted_Y = clf.predict(tr_x)
 	print ("accuracy from orig: ", metrics.accuracy_score(tr_y, predicted_Y))
-	joblib.dump(clf, 'filename.pkl') 
+	joblib.dump(clf, 'CLASSIFIER_FILE') 
 
 	return
 	'''
