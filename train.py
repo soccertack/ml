@@ -102,30 +102,6 @@ def train(tr_x, tr_y, x_array, y_array, inlier):
 		predicted_Y = clf.predict(tr_x)
 		print ("accuracy from training: ", metrics.accuracy_score(tr_y, predicted_Y))
 
-		cross_validation = 3
-		# Cross validation method 1
-		score = cross_val_score(clf, tr_x, tr_y, cv=cross_validation)
-		print ("cross validation score", score)
-		predicted_Y = clf.predict(x_array)
-		print ("accuracy from dup: ", metrics.accuracy_score(y_array, predicted_Y))
-
-	
-		X_train, X_test, y_train, y_test = train_test_split(
-		tr_x, tr_y, test_size=0.4, random_state=0)
-		clf = clf.fit(X_train, y_train)
-		print("6:4 validation: ", clf.score(X_test, y_test))
-
-		X_train, X_test, y_train, y_test = train_test_split(
-		x_array, y_array, test_size=0.2, random_state=0)
-		clf = clf.fit(X_train, y_train)
-		print("8:2 validation: ", clf.score(X_test, y_test))
-
-		print("ShuffleSplit")
-		ss = ShuffleSplit(n_splits=3, test_size=0.25, random_state=0)
-		for train_index, test_index in ss.split(tr_x):
-			score = clf.fit(tr_x[train_index], tr_y[train_index]).score(tr_x[test_index], tr_y[test_index])
-			print("score", score)
-
 		print("ShuffleSplit - train with good data, test with orig data")
 		ss = ShuffleSplit(n_splits=3, test_size=0.25, random_state=0)
 		for train_index, test_index in ss.split(x_array):
