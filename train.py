@@ -1,7 +1,6 @@
 import numpy as np
 import pickle
 from sklearn.model_selection import KFold
-from SimClasses import *
 import itertools
 from sklearn.externals import joblib
 from predict import *
