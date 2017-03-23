@@ -81,19 +81,19 @@ def train(tr_x, tr_y, x_array, y_array):
 	print ("Y data dimension is ", tr_y.shape)
 
 	classifiers = {
-		"BernoulliNB": BernoulliNB(),
-		"SGDClassifier": SGDClassifier(loss="hinge", penalty="l2", shuffle=True),
+		#"BernoulliNB": BernoulliNB(),
+		#"SGDClassifier": SGDClassifier(loss="hinge", penalty="l2", shuffle=True),
 		#"Decision Tree": tree.DecisionTreeClassifier(),
 		#"KNN": KNeighborsClassifier(n_neighbors=3),
-		"Logistic": LogisticRegression(penalty='l1', tol=0.0001, C=1,
-				fit_intercept=True, intercept_scaling=1,
-				class_weight=None, random_state=None,
-				solver='liblinear', max_iter=100),
+		#"Logistic": LogisticRegression(penalty='l1', tol=0.0001, C=1,
+	#			fit_intercept=True, intercept_scaling=1,
+	#			class_weight=None, random_state=None,
+	#			solver='liblinear', max_iter=100),
 		#"Linear SVM": svm.SVC(kernel='linear', C=0.025),
-		"AdaBoost": AdaBoostClassifier(),
-		"GaussianNB": GaussianNB(),
+		#"AdaBoost": AdaBoostClassifier(),
+		#"GaussianNB": GaussianNB(),
 		#"Poly SVM":  svm.SVC(kernel='poly'),
-		#"RBF SVM": SVC(gamma-2, C=1).
+		"RBF SVM": svm.SVC(gamma=2, C=1),
 		}
 
 
