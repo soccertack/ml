@@ -21,7 +21,9 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
-
+import sys
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import ShuffleSplit
 
 INPUT_X_FILE="StudentData/Data_x.pkl"
 INPUT_Y_FILE="StudentData/Data_y.pkl"
@@ -64,9 +66,10 @@ def check_dimension(x_array, y_array):
 			print(np.bincount(np.greater(plot_y, -5)))
 
 			# Plot distribution
-			plt.scatter(plot_x, plot_y, marker='.', c=colors[cls], s=0.1)
-			plt.show()
-			plt.close()
+			#plt.scatter(plot_x, plot_y, marker='.', c=colors[cls], s=0.1)
+			#plt.show()
+			#plt.close()
+
 def check_rows(x_array, y_array):
 	print (x_array[0])
 	print (x_array[0].sum())
@@ -76,7 +79,7 @@ def check_rows(x_array, y_array):
 	
 	sys.exit()
 
-def train(tr_x, tr_y, x_array, y_array):
+def train(tr_x, tr_y, x_array, y_array, inlier):
 	print ("X data dimension is ", tr_x.shape)
 	print ("Y data dimension is ", tr_y.shape)
 
@@ -103,17 +106,18 @@ def train(tr_x, tr_y, x_array, y_array):
 		predicted_Y = clf.predict(tr_x)
 		print ("accuracy from training: ", metrics.accuracy_score(tr_y, predicted_Y))
 
-		cross_validation = 5
-		# Cross validation method 1
-		#score = cross_val_score(clf, tr_x, tr_y, cv=cross_validation)
-		#print ("cross validation score", score)
-		predicted_Y = clf.predict(x_array)
-		print ("accuracy from dup: ", metrics.accuracy_score(y_array, predicted_Y))
+		print("ShuffleSplit - train with good data, test with orig data")
+		ss = ShuffleSplit(n_splits=3, test_size=0.25, random_state=0)
+		for train_index, test_index in ss.split(x_array):
 
-	# Cross validation method 2
-	#k_fold = KFold(n_splits=cross_validation)
-	#manual_kfold_score = [clf.fit(tr_x[tr_idx], tr_y[tr_idx]).score(tr_x[test_idx], tr_y[test_idx]) for tr_idx, test_idx in k_fold.split(tr_x)]
-	#print ("manual kfold score", manual_kfold_score)
+			inlier_tr = inlier[train_index]
+			selected_x = x_array[train_index]
+			inlier_selected_x = selected_x[inlier_tr]
+			selected_y = y_array[train_index]
+			inlier_selected_y = selected_y[inlier_tr]
+
+			score = clf.fit(inlier_selected_x, inlier_selected_y).score(x_array[test_index], y_array[test_index])
+			print("score", score)
 
 	joblib.dump(clf, CLASSIFIER_FILE) 
 
@@ -127,6 +131,8 @@ num_of_dim = x_array.shape[1]
 
 #check_rows(x_array, y_array)
 
+# -------------------------------------------------------------
+#TODO: Do feature selection
 #Removing features with low variance
 #p = 0.90
 #sel = VarianceThreshold(threshold=(p * (1 - p)))
@@ -137,10 +143,7 @@ num_of_dim = x_array.shape[1]
 #x_array = SelectKBest(chi2, k=2).fit_transform(x_array, y_array)
 #print("after selection")
 #print (x_array.shape)
-
-
-# plot preparation
-colors = ['dummy', 'blue', 'red']
+# -------------------------------------------------------------
 
 # Print out basic information about the training set
 #basic_info(x_array, y_array)
@@ -148,94 +151,20 @@ colors = ['dummy', 'blue', 'red']
 # Check the range of each dimension
 #check_dimension(x_array, y_array)
 
-#sys.exit()
-# --------- Up to this point, data is intact ---------
-
-
-# TODO: remove this. Sample 1000 data
-D = 100
-
+#TODO: check if this transform helps performance
 # normalize -9 to 1, rest to 0
 # x_array= (x_array - x_array.mean()) / x_array.std()
 #x_array[x_array > -5] = 0
 #x_array[x_array < -0] = 1
 
-#Remove outliers
-
-
-'''
-plt_idx = 0
-pic_num = 1
-class_1 = []
-class_2 = []
-for dims in itertools.combinations(range(D), 2):
-	dim1 = dims[0]
-	dim2 = dims[1]
-	plt_idx += 1
-	#plt.subplot(2, 5, plt_idx)
-	print ("Dimension "+str(dim1) + " Dimension "+str(dim2))
-	for i in range (1,3):
-		# Pick rows with the given class i
-		X_x = x_array[y_array == i][:,dim1]
-		num_of_rows = X_x.shape[0]
-		X_y = x_array[y_array == i][:,dim2]
-
-		cond_array = X_x
-		orig_x = X_x
-		orig_y = X_y
-		X1 = orig_x[[np.all(cond_array[k] < -5) for k in range(0,num_of_rows)]]
-		Y1 = orig_y[[np.all(cond_array[k] < -5) for k in range(0,num_of_rows)]]
-
-		cond_array = Y1
-		orig_x = X1
-		orig_y = Y1
-		num_of_rows = Y1.shape[0]
-		X2 = orig_x[[np.all(cond_array[k] < -5) for k in range(0,num_of_rows)]]
-		Y2 = orig_y[[np.all(cond_array[k] < -5) for k in range(0,num_of_rows)]]
-
-		if i == 1:
-			class_1.append(X2.shape[0])
-		else:
-			class_2.append(X2.shape[0])
-		#plt.scatter(X2, Y2, marker='.', c=colors[i], s=0.1)
-		#plt.xlabel("Dimension "+str(dim1))
-		#plt.ylabel("Dimension "+str(dim2))
-
-	if (plt_idx == 10):
-		#plot = PdfPages("plots/Plot_" + str(dim1) +"_" + str(dim2) +".pdf")
-		plot = PdfPages("plots/" + str(pic_num) +".pdf")
-		plot.savefig()
-		plot.close()
-		plt.close()
-		pic_num += 1
-		plt_idx = 0
-
-plot_y = class_1
-plot_x = np.arange(len(plot_y))
-plt.plot(plot_x, plot_y, marker='.', c=colors[1])
-
-plot_y = class_2
-plot_x = np.arange(len(plot_y))
-plt.plot(plot_x, plot_y, marker='.', c=colors[2])
-
-with open("class1_result.pkl", 'wb') as f:
-	pickle.dump(class_1, f)
-with open("class2_result.pkl", 'wb') as f:
-	pickle.dump(class_2, f)
-
-plot = PdfPages("plots/all.pdf")
-plot.savefig()
-plot.close()
-plt.close()
-'''
-
+# Remove outliers
 f = open('inlier.pkl', 'rb')
 inlier = pickle.load(f)
 f.close()
-
 tr_x = x_array[inlier]
 tr_y = y_array[inlier]
-train(tr_x, tr_y, x_array, y_array)
+
+train(tr_x, tr_y, x_array, y_array, inlier)
 #predicted_Y = predict(x_array)
 #print ("accuracy from dup: ", metrics.accuracy_score(y_array, predicted_Y))
 
