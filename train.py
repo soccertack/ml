@@ -18,6 +18,47 @@ INPUT_X_FILE="Data_x.pkl"
 INPUT_Y_FILE="Data_y.pkl"
 CLASSIFIER_FILE="Trained_classifier.pkl"
 
+def get_training_data():
+	f = open(INPUT_X_FILE, 'rb')
+	x_array = pickle.load(f)
+	f.close()
+
+	f = open(INPUT_Y_FILE, 'rb')
+	y_array = pickle.load(f)
+	f.close()
+	
+	return x_array, y_array
+
+#Print out basic info
+def basic_info(x_array, y_array):
+	print (x_array.shape)
+	print (y_array.shape)
+
+	# Checked that number of sample for each class is the same
+	print (np.bincount(y_array.astype(int)))
+
+	# Check the range of each dimension
+	# Max: around 0.5
+	print (np.amax(x_array, axis = 0))
+	# Min: exactly -9.332
+	print (np.amin(x_array, axis = 0))
+
+
+def check_dimension(x_array, y_array):
+	for dim in range(0,num_of_dim):
+		for cls in (1, 2):
+			# take data for class i
+			plot_y = x_array[y_array == cls][:,dim]
+			plot_x = np.arange(plot_y.shape[0])
+			
+			# print out number of samples greater than -5
+			print(np.bincount(np.greater(plot_y, -5)))
+
+			# Plot distribution
+			# plt.scatter(plot_x, plot_y, marker='.', c=colors[cls], s=0.1)
+			# plt.show()
+			# plt.close()
+
 def train(tr_x, tr_y):
 	print ("X data dimension is ", tr_x.shape)
 	print ("Y data dimension is ", tr_y.shape)
@@ -50,46 +91,18 @@ def train(tr_x, tr_y):
 
 start = timer()
 
-f2 = open(INPUT_X_FILE, 'rb')
-x_array = pickle.load(f2)
-f2.close()
-f2 = open(INPUT_Y_FILE, 'rb')
-y_array = pickle.load(f2)
-f2.close()
-
-# Ensure Dimensions
-print (x_array.shape)
-print (y_array.shape)
+x_array, y_array = get_training_data()
 num_of_data = x_array.shape[0]
 num_of_dim = x_array.shape[1]
 
-# Checked that number of sample for each class is the same
-#print (np.bincount(y_array.astype(int)))
-
-# Check the range of each dimension
-# Max: around 0.5
-#print (np.amax(x_array, axis = 0))
-# Min: exactly -9.332
-#print (np.amin(x_array, axis = 0))
-
-# plot the first dimension distribution
-plot_x = np.arange(num_of_data)
-
-# plot basics
+# plot preparation
 colors = ['dummy', 'blue', 'red']
 
-# Check # of + and - for each dimension
-for dim in range(0,num_of_dim):
-	for cls in (1, 2):
-		plot_y = x_array[y_array == cls][:,dim]
-		plot_x = np.arange(plot_y.shape[0])
-		#print(np.bincount(np.greater(plot_y, -5)))
-		#plt.scatter(plot_x, plot_y, marker='.', c=colors[cls], s=0.1)
-		#plt.show()
+# Print out basic information about the training set
+#basic_info(x_array, y_array)
 
-# Check # of + and - for each rows
-#for i in range(0,num_of_data):
-	#print(np.bincount(np.greater(x_array[i], -5)), y_array[i])
+# Check the range of each dimension
+#check_dimension(x_array, y_array)
 
 # --------- Up to this point, data is intact ---------
 
