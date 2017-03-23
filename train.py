@@ -76,24 +76,21 @@ def check_rows(x_array, y_array):
 	
 	sys.exit()
 
-def train(tr_x, tr_y):
+def train(tr_x, tr_y, x_array, y_array):
 	print ("X data dimension is ", tr_x.shape)
 	print ("Y data dimension is ", tr_y.shape)
 
 	classifiers = {
-		#"BernoulliNB": BernoulliNB(),
-		#"SGDClassifier": SGDClassifier(loss="hinge", penalty="l2", shuffle=True),
+		"BernoulliNB": BernoulliNB(),
+		"SGDClassifier": SGDClassifier(loss="hinge", penalty="l2", shuffle=True),
 		#"Decision Tree": tree.DecisionTreeClassifier(),
 		#"KNN": KNeighborsClassifier(n_neighbors=3),
-		#"Logistic": LogisticRegression(penalty='l1', tol=0.0001, C=1,
-		#		fit_intercept=True, intercept_scaling=1,
-		#		class_weight=None, random_state=None,
-		#		solver='liblinear', max_iter=100),
+		"Logistic": LogisticRegression(penalty='l1', tol=0.0001, C=1,
+				fit_intercept=True, intercept_scaling=1,
+				class_weight=None, random_state=None,
+				solver='liblinear', max_iter=100),
 		#"Linear SVM": svm.SVC(kernel='linear', C=0.025),
-		"AdaBoost": #AdaBoostClassifier(),
-			 AdaBoostClassifier(DecisionTreeClassifier(max_depth=1),
-                         algorithm="SAMME",
-                         n_estimators=200),
+		"AdaBoost": AdaBoostClassifier(),
 		"GaussianNB": GaussianNB(),
 		#"Poly SVM":  svm.SVC(kernel='poly'),
 		#"RBF SVM": SVC(gamma-2, C=1).
@@ -108,8 +105,10 @@ def train(tr_x, tr_y):
 
 		cross_validation = 5
 		# Cross validation method 1
-		score = cross_val_score(clf, tr_x, tr_y, cv=cross_validation)
-		print ("cross validation score", score)
+		#score = cross_val_score(clf, tr_x, tr_y, cv=cross_validation)
+		#print ("cross validation score", score)
+		predicted_Y = clf.predict(x_array)
+		print ("accuracy from dup: ", metrics.accuracy_score(y_array, predicted_Y))
 
 	# Cross validation method 2
 	#k_fold = KFold(n_splits=cross_validation)
@@ -234,11 +233,11 @@ f = open('inlier.pkl', 'rb')
 inlier = pickle.load(f)
 f.close()
 
-x_array = x_array[inlier]
-y_array = y_array[inlier]
-train(x_array, y_array)
-predicted_Y = predict(x_array)
-print ("accuracy from dup: ", metrics.accuracy_score(y_array, predicted_Y))
+tr_x = x_array[inlier]
+tr_y = y_array[inlier]
+train(tr_x, tr_y, x_array, y_array)
+#predicted_Y = predict(x_array)
+#print ("accuracy from dup: ", metrics.accuracy_score(y_array, predicted_Y))
 
 end = timer()
 print (end - start)
