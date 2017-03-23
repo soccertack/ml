@@ -60,34 +60,76 @@ f2.close()
 # Ensure Dimensions
 print (x_array.shape)
 print (y_array.shape)
+num_of_data = x_array.shape[0]
+num_of_dim = x_array.shape[1]
+
+# Checked that number of sample for each class is the same
+#print (np.bincount(y_array.astype(int)))
+
+# Check the range of each dimension
+# Max: around 0.5
+#print (np.amax(x_array, axis = 0))
+# Min: exactly -9.332
+#print (np.amin(x_array, axis = 0))
+
+# plot the first dimension distribution
+plot_x = np.arange(num_of_data)
+
+# plot basics
+colors = ['dummy', 'blue', 'red']
+
+# Check # of + and - for each dimension
+for dim in range(0,num_of_dim):
+	for cls in (1, 2):
+		plot_y = x_array[y_array == cls][:,dim]
+		plot_x = np.arange(plot_y.shape[0])
+		#print(np.bincount(np.greater(plot_y, -5)))
+		#plt.scatter(plot_x, plot_y, marker='.', c=colors[cls], s=0.1)
+		#plt.show()
+
+# Check # of + and - for each rows
+#for i in range(0,num_of_data):
+	#print(np.bincount(np.greater(x_array[i], -5)), y_array[i])
+
+# --------- Up to this point, data is intact ---------
+
 
 # TODO: remove this. Sample 1000 data
-sample_size = 500
+sample_size = 10000
 x_1 = x_array[0:sample_size]
-print ("x[0:sample]")
-print (x_1)
+#print ("x[0:sample]")
+#print (x_1)
 y_1 = y_array[0:sample_size]
 x_2 = x_array[-sample_size:]
 y_2 = y_array[-sample_size:]
 x_array = np.concatenate((x_1, x_2), axis=0)
 y_array = np.concatenate((y_1, y_2), axis=0)
-print (x_array.shape)
-print (y_array.shape)
-print ("x[0:sample] + x[-sample:]")
-print (x_array)
+#print (x_array.shape)
+#print (y_array.shape)
+#print ("x[0:sample] + x[-sample:]")
+#print (x_array)
 
-colors = ['dummy', 'blue', 'red']
 D = 100
 
-x_array= (x_array - x_array.mean()) / x_array.std()
+# normalize
+# x_array= (x_array - x_array.mean()) / x_array.std()
+
+#Remove outliers
+num_of_rows = x_array.shape[0]
+cond_array = x_array 
+orig_x = x_array
+orig_y = y_array
 
 plt_idx = 0
 pic_num = 1
+class_1 = []
+class_2 = []
 for dims in itertools.combinations(range(D), 2):
 	dim1 = dims[0]
 	dim2 = dims[1]
 	plt_idx += 1
-	plt.subplot(2, 5, plt_idx)
+	#plt.subplot(2, 5, plt_idx)
+	print ("Dimension "+str(dim1) + " Dimension "+str(dim2))
 	for i in range (1,3):
 		# Pick rows with the given class i
 		X_x = x_array[y_array == i][:,dim1]
@@ -97,20 +139,25 @@ for dims in itertools.combinations(range(D), 2):
 		cond_array = X_x
 		orig_x = X_x
 		orig_y = X_y
-		X1 = orig_x[[np.all(cond_array[k] > -1) for k in range(0,num_of_rows)]]
-		Y1 = orig_y[[np.all(cond_array[k] > -1) for k in range(0,num_of_rows)]]
+		X1 = orig_x[[np.all(cond_array[k] < -5) for k in range(0,num_of_rows)]]
+		Y1 = orig_y[[np.all(cond_array[k] < -5) for k in range(0,num_of_rows)]]
 
 		cond_array = Y1
 		orig_x = X1
 		orig_y = Y1
 		num_of_rows = Y1.shape[0]
-		X2 = orig_x[[np.all(cond_array[k] > -1) for k in range(0,num_of_rows)]]
-		Y2 = orig_y[[np.all(cond_array[k] > -1) for k in range(0,num_of_rows)]]
+		X2 = orig_x[[np.all(cond_array[k] < -5) for k in range(0,num_of_rows)]]
+		Y2 = orig_y[[np.all(cond_array[k] < -5) for k in range(0,num_of_rows)]]
 
-		plt.scatter(X2, Y2, marker='.', c=colors[i], s=0.1)
-		plt.xlabel("Dimension "+str(dim1))
-		plt.ylabel("Dimension "+str(dim2))
+		if i == 1:
+			class_1.append(X2.shape[0])
+		else:
+			class_2.append(X2.shape[0])
+		#plt.scatter(X2, Y2, marker='.', c=colors[i], s=0.1)
+		#plt.xlabel("Dimension "+str(dim1))
+		#plt.ylabel("Dimension "+str(dim2))
 
+	'''
 	if (plt_idx == 10):
 		#plot = PdfPages("plots/Plot_" + str(dim1) +"_" + str(dim2) +".pdf")
 		plot = PdfPages("plots/" + str(pic_num) +".pdf")
@@ -119,8 +166,20 @@ for dims in itertools.combinations(range(D), 2):
 		plt.close()
 		pic_num += 1
 		plt_idx = 0
+	'''
+
+plot_y = class_1
+plot_x = np.arange(len(plot_y))
+plt.plot(plot_x, plot_y, marker='.', c=colors[1])
+
+plot_y = class_2
+plot_x = np.arange(len(plot_y))
+plt.plot(plot_x, plot_y, marker='.', c=colors[2])
+plt.show()
 
 sys.exit()
+x_array = x_sanitized
+y_array = y_sanitized
 train(x_array, y_array)
 predicted_Y = predict(x_array)
 print ("accuracy from dup: ", metrics.accuracy_score(y_array, predicted_Y))
