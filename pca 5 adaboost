@@ -1,0 +1,9 @@
+X data dimension is  (85628, 100)
+Y data dimension is  (85628,)
+AdaBoost
+accuracy from training:  0.62908160882
+ShuffleSplit - train with good data, test with orig data
+score 0.50124
+score 0.49764
+score 0.49776
+36.654126739000276
