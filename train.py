@@ -188,7 +188,17 @@ plt.plot(plot_x, plot_y, marker='.', c=colors[1])
 plot_y = class_2
 plot_x = np.arange(len(plot_y))
 plt.plot(plot_x, plot_y, marker='.', c=colors[2])
-plt.show()
+
+with open("class1_result.pkl", 'wb') as f:
+	pickle.dump(class_1, f)
+with open("class2_result.pkl", 'wb') as f:
+	pickle.dump(class_2, f)
+
+plot = PdfPages("plots/all.pdf")
+plot.savefig()
+plot.close()
+plt.close()
+
 
 sys.exit()
 x_array = x_sanitized
