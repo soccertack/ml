@@ -1,10 +1,10 @@
-Midterm preparation
+Midterm TODOs
 
-[Programming]
-3. Cleanup data
-4. Maybe need 3D view (3d.py)
+1. Feature selection
+2. PCA
+3. Try other hyper-params
+4. Think about the hidden distribution
+   --> It's hard to know, but if I know what can I do?
+5. Write, Write and Write
+6. Keep figures.
 
-[Contents]
-1. List all the techniques we can use.
-2. Overfitting issues for each 
-3. Upload references
