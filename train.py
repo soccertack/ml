@@ -13,9 +13,19 @@ from timeit import default_timer as timer
 from sklearn import svm
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.naive_bayes import *
+from sklearn.linear_model import SGDClassifier
+from sklearn import tree
+from sklearn.kernel_approximation import RBFSampler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.feature_selection import VarianceThreshold
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import chi2
 
-INPUT_X_FILE="Data_x.pkl"
-INPUT_Y_FILE="Data_y.pkl"
+
+INPUT_X_FILE="StudentData/Data_x.pkl"
+INPUT_Y_FILE="StudentData/Data_y.pkl"
 CLASSIFIER_FILE="Trained_classifier.pkl"
 
 def get_training_data():
@@ -55,37 +65,53 @@ def check_dimension(x_array, y_array):
 			print(np.bincount(np.greater(plot_y, -5)))
 
 			# Plot distribution
-			# plt.scatter(plot_x, plot_y, marker='.', c=colors[cls], s=0.1)
-			# plt.show()
-			# plt.close()
+			plt.scatter(plot_x, plot_y, marker='.', c=colors[cls], s=0.1)
+			plt.show()
+			plt.close()
+def check_rows(x_array, y_array):
+	print (x_array[0])
+	print (x_array[0].sum())
+	print (x_array[0:50000].sum())
+	print (x_array[-50000:].sum())
+	
+	
+	sys.exit()
 
 def train(tr_x, tr_y):
 	print ("X data dimension is ", tr_x.shape)
 	print ("Y data dimension is ", tr_y.shape)
 
-	cov = np.cov(tr_x)
-	print ("cov")
-	print (cov)
-	# This is the line YOU need to play around
-	clf = AdaBoostClassifier(DecisionTreeClassifier(max_depth=1),
-                         algorithm="SAMME",
-                         n_estimators=200)
+	classifiers = {
+		"BernoulliNB": BernoulliNB(),
+		"SGDClassifier": SGDClassifier(loss="hinge", penalty="l2", shuffle=True),
+		#"Decision Tree": tree.DecisionTreeClassifier(),
+		#"KNN": KNeighborsClassifier(n_neighbors=3),
+		"Logistic": LogisticRegression(penalty='l1', tol=0.0001, C=1,
+				fit_intercept=True, intercept_scaling=1,
+				class_weight=None, random_state=None,
+				solver='liblinear', max_iter=100),
+		"Linear SVM": svm.SVC(kernel='linear'),
+		#"Poly SVM":  svm.SVC(kernel='poly'),
+		}
 
-	clf = clf.fit(tr_x, tr_y)
-	predicted_Y = clf.predict(tr_x)
-	print ("accuracy from training: ", metrics.accuracy_score(tr_y, predicted_Y))
 
-	cross_validation = 5
-	# Cross validation method 1
-	score = cross_val_score(clf, tr_x, tr_y, cv=cross_validation)
-	print ("cross validation score", score)
+	for i, (clf_name, clf) in enumerate(classifiers.items()):
+		print (clf_name)
+		clf = clf.fit(tr_x, tr_y)
+		predicted_Y = clf.predict(tr_x)
+		print ("accuracy from training: ", metrics.accuracy_score(tr_y, predicted_Y))
+
+		cross_validation = 5
+		# Cross validation method 1
+		score = cross_val_score(clf, tr_x, tr_y, cv=cross_validation)
+		print ("cross validation score", score)
 
 	# Cross validation method 2
 	#k_fold = KFold(n_splits=cross_validation)
 	#manual_kfold_score = [clf.fit(tr_x[tr_idx], tr_y[tr_idx]).score(tr_x[test_idx], tr_y[test_idx]) for tr_idx, test_idx in k_fold.split(tr_x)]
 	#print ("manual kfold score", manual_kfold_score)
 
-	joblib.dump(clf, 'CLASSIFIER_FILE') 
+	joblib.dump(clf, CLASSIFIER_FILE) 
 
 	return
 
@@ -94,6 +120,20 @@ start = timer()
 x_array, y_array = get_training_data()
 num_of_data = x_array.shape[0]
 num_of_dim = x_array.shape[1]
+
+#check_rows(x_array, y_array)
+
+#Removing features with low variance
+#p = 0.90
+#sel = VarianceThreshold(threshold=(p * (1 - p)))
+#selected_x = sel.fit_transform(x_array)
+#x_array = selected_x
+
+#Univariate feature selection
+#x_array = SelectKBest(chi2, k=2).fit_transform(x_array, y_array)
+#print("after selection")
+#print (x_array.shape)
+
 
 # plot preparation
 colors = ['dummy', 'blue', 'red']
@@ -104,35 +144,22 @@ colors = ['dummy', 'blue', 'red']
 # Check the range of each dimension
 #check_dimension(x_array, y_array)
 
+#sys.exit()
 # --------- Up to this point, data is intact ---------
 
 
 # TODO: remove this. Sample 1000 data
-sample_size = 10000
-x_1 = x_array[0:sample_size]
-#print ("x[0:sample]")
-#print (x_1)
-y_1 = y_array[0:sample_size]
-x_2 = x_array[-sample_size:]
-y_2 = y_array[-sample_size:]
-x_array = np.concatenate((x_1, x_2), axis=0)
-y_array = np.concatenate((y_1, y_2), axis=0)
-#print (x_array.shape)
-#print (y_array.shape)
-#print ("x[0:sample] + x[-sample:]")
-#print (x_array)
-
 D = 100
 
-# normalize
+# normalize -9 to 1, rest to 0
 # x_array= (x_array - x_array.mean()) / x_array.std()
+#x_array[x_array > -5] = 0
+#x_array[x_array < -0] = 1
 
 #Remove outliers
-num_of_rows = x_array.shape[0]
-cond_array = x_array 
-orig_x = x_array
-orig_y = y_array
 
+
+'''
 plt_idx = 0
 pic_num = 1
 class_1 = []
@@ -170,7 +197,6 @@ for dims in itertools.combinations(range(D), 2):
 		#plt.xlabel("Dimension "+str(dim1))
 		#plt.ylabel("Dimension "+str(dim2))
 
-	'''
 	if (plt_idx == 10):
 		#plot = PdfPages("plots/Plot_" + str(dim1) +"_" + str(dim2) +".pdf")
 		plot = PdfPages("plots/" + str(pic_num) +".pdf")
@@ -179,7 +205,6 @@ for dims in itertools.combinations(range(D), 2):
 		plt.close()
 		pic_num += 1
 		plt_idx = 0
-	'''
 
 plot_y = class_1
 plot_x = np.arange(len(plot_y))
@@ -198,11 +223,14 @@ plot = PdfPages("plots/all.pdf")
 plot.savefig()
 plot.close()
 plt.close()
+'''
 
+f = open('inlier.pkl', 'rb')
+inlier = pickle.load(f)
+f.close()
 
-sys.exit()
-x_array = x_sanitized
-y_array = y_sanitized
+x_array = x_array[inlier]
+y_array = y_array[inlier]
 train(x_array, y_array)
 predicted_Y = predict(x_array)
 print ("accuracy from dup: ", metrics.accuracy_score(y_array, predicted_Y))
