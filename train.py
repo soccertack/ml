@@ -21,7 +21,9 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
-
+import sys
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import ShuffleSplit
 
 INPUT_X_FILE="StudentData/Data_x.pkl"
 INPUT_Y_FILE="StudentData/Data_y.pkl"
@@ -76,22 +78,19 @@ def check_rows(x_array, y_array):
 	
 	sys.exit()
 
-def train(tr_x, tr_y, x_array, y_array):
+def train(tr_x, tr_y, x_array, y_array, inlier):
 	print ("X data dimension is ", tr_x.shape)
 	print ("Y data dimension is ", tr_y.shape)
 
 	classifiers = {
 		"BernoulliNB": BernoulliNB(),
-		"SGDClassifier": SGDClassifier(loss="hinge", penalty="l2", shuffle=True),
+		#"SGDClassifier": SGDClassifier(loss="hinge", penalty="l2", shuffle=True),
 		#"Decision Tree": tree.DecisionTreeClassifier(),
 		#"KNN": KNeighborsClassifier(n_neighbors=3),
-		"Logistic": LogisticRegression(penalty='l1', tol=0.0001, C=1,
-				fit_intercept=True, intercept_scaling=1,
-				class_weight=None, random_state=None,
-				solver='liblinear', max_iter=100),
+		#"Logistic": LogisticRegression(penalty='l1', tol=0.0001, C=1, fit_intercept=True, intercept_scaling=1, class_weight=None, random_state=None, solver='liblinear', max_iter=100),
 		#"Linear SVM": svm.SVC(kernel='linear', C=0.025),
 		"AdaBoost": AdaBoostClassifier(),
-		"GaussianNB": GaussianNB(),
+		#"GaussianNB": GaussianNB(),
 		#"Poly SVM":  svm.SVC(kernel='poly'),
 		#"RBF SVM": SVC(gamma-2, C=1).
 		}
@@ -103,17 +102,42 @@ def train(tr_x, tr_y, x_array, y_array):
 		predicted_Y = clf.predict(tr_x)
 		print ("accuracy from training: ", metrics.accuracy_score(tr_y, predicted_Y))
 
-		cross_validation = 5
+		cross_validation = 3
 		# Cross validation method 1
-		#score = cross_val_score(clf, tr_x, tr_y, cv=cross_validation)
-		#print ("cross validation score", score)
+		score = cross_val_score(clf, tr_x, tr_y, cv=cross_validation)
+		print ("cross validation score", score)
 		predicted_Y = clf.predict(x_array)
 		print ("accuracy from dup: ", metrics.accuracy_score(y_array, predicted_Y))
 
-	# Cross validation method 2
-	#k_fold = KFold(n_splits=cross_validation)
-	#manual_kfold_score = [clf.fit(tr_x[tr_idx], tr_y[tr_idx]).score(tr_x[test_idx], tr_y[test_idx]) for tr_idx, test_idx in k_fold.split(tr_x)]
-	#print ("manual kfold score", manual_kfold_score)
+	
+		X_train, X_test, y_train, y_test = train_test_split(
+		tr_x, tr_y, test_size=0.4, random_state=0)
+		clf = clf.fit(X_train, y_train)
+		print("6:4 validation: ", clf.score(X_test, y_test))
+
+		X_train, X_test, y_train, y_test = train_test_split(
+		x_array, y_array, test_size=0.2, random_state=0)
+		clf = clf.fit(X_train, y_train)
+		print("8:2 validation: ", clf.score(X_test, y_test))
+
+		print("ShuffleSplit")
+		ss = ShuffleSplit(n_splits=3, test_size=0.25, random_state=0)
+		for train_index, test_index in ss.split(tr_x):
+			score = clf.fit(tr_x[train_index], tr_y[train_index]).score(tr_x[test_index], tr_y[test_index])
+			print("score", score)
+
+		print("ShuffleSplit - train with good data, test with orig data")
+		ss = ShuffleSplit(n_splits=3, test_size=0.25, random_state=0)
+		for train_index, test_index in ss.split(x_array):
+
+			inlier_tr = inlier[train_index]
+			selected_x = x_array[train_index]
+			inlier_selected_x = selected_x[inlier_tr]
+			selected_y = y_array[train_index]
+			inlier_selected_y = selected_y[inlier_tr]
+
+			score = clf.fit(inlier_selected_x, inlier_selected_y).score(x_array[test_index], y_array[test_index])
+			print("score", score)
 
 	joblib.dump(clf, CLASSIFIER_FILE) 
 
@@ -235,7 +259,8 @@ f.close()
 
 tr_x = x_array[inlier]
 tr_y = y_array[inlier]
-train(tr_x, tr_y, x_array, y_array)
+
+train(tr_x, tr_y, x_array, y_array, inlier)
 #predicted_Y = predict(x_array)
 #print ("accuracy from dup: ", metrics.accuracy_score(y_array, predicted_Y))
 
