@@ -90,10 +90,10 @@ def train(tr_x, tr_y):
 		#		class_weight=None, random_state=None,
 		#		solver='liblinear', max_iter=100),
 		#"Linear SVM": svm.SVC(kernel='linear', C=0.025),
-		"AdaBoost": AdaBoostClassifier(),
-			 #AdaBoostClassifier(DecisionTreeClassifier(max_depth=1),
-                         #algorithm="SAMME",
-                         #n_estimators=200)
+		"AdaBoost": #AdaBoostClassifier(),
+			 AdaBoostClassifier(DecisionTreeClassifier(max_depth=1),
+                         algorithm="SAMME",
+                         n_estimators=200),
 		"GaussianNB": GaussianNB(),
 		#"Poly SVM":  svm.SVC(kernel='poly'),
 		#"RBF SVM": SVC(gamma-2, C=1).
