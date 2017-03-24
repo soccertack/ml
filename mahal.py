@@ -52,9 +52,22 @@ np.set_printoptions(threshold=np.inf)
 with open("maha_dist-all.pkl", 'rb') as f:
 	maha_dist = pickle.load(f)
 
-#sample = 100000
-plot_y = maha_dist
-plot_y = plot_y[plot_y>1000]
-plot_x = np.arange(plot_y.shape[0])
-plt.scatter(plot_x, plot_y, marker='.', c='blue')
+print ("maha_dist shape: ", maha_dist.shape)
+sample = 50000
+plot_y = maha_dist[0:sample]
+plot_y = plot_y[plot_y<1000]
+#plt.hist(plot_y)
+size = plot_y.shape[0]
+plot_x = np.arange(size)
+plt.scatter(plot_x, plot_y, marker='.', c='blue', s=0.1, label='class1')
+
+plot_y = maha_dist[-sample:]
+plot_y = plot_y[plot_y<1000]
+#plt.hist(plot_y)
+plot_x = np.arange(size, size+ plot_y.shape[0])
+plt.scatter(plot_x, plot_y, marker='.', c='orange', s=0.1, label='class2')
+
+plt.xlabel('Data index')
+plt.ylabel('Mahalanobis Distance')
+plt.title('Mahalanobis Distance: Low')
 plt.show()
