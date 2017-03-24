@@ -1,0 +1,28 @@
+cov without outlier with binary input
+X data dimension is  (85628, 100)
+Y data dimension is  (85628,)
+Logistic
+accuracy from training:  0.585684589153
+ShuffleSplit - train with good data, test with orig data
+score 0.49428
+score 0.5002
+score 0.504
+GaussianNB
+accuracy from training:  0.572686504414
+ShuffleSplit - train with good data, test with orig data
+score 0.49772
+score 0.50344
+score 0.5004
+BernoulliNB
+accuracy from training:  0.58468024478
+ShuffleSplit - train with good data, test with orig data
+score 0.4954
+score 0.5034
+score 0.5024
+SGDClassifier
+accuracy from training:  0.576960807213
+ShuffleSplit - train with good data, test with orig data
+score 0.50016
+score 0.49804
+score 0.4984
+5.331405386999904
