@@ -13,7 +13,7 @@ from sklearn.covariance import EmpiricalCovariance, MinCovDet
 def get_inliers(x_array):
 
 	rows = x_array.shape[0]
-	rows = 100
+	rows = 100000
 	half_rows = int(rows/2)
 
 	# This threashold is predetermined by looking at mahalanobis distance
@@ -21,7 +21,7 @@ def get_inliers(x_array):
 	
 	maha_dist = {}
 	inlier_list = {}
-	X = x_array[0:100]
+	X = x_array
 
 	# fit a Minimum Covariance Determinant (MCD) robust estimator to data
 	start = timer()
@@ -47,7 +47,14 @@ def get_inliers(x_array):
 	return 1
 
 np.set_printoptions(threshold=np.inf)
-x_array, y_array = get_training_data()
-inlier = get_inliers(x_array)
-#with open("inlier.pkl", 'wb') as f:
-#	pickle.dump(inlier, f)
+#x_array, y_array = get_training_data()
+#inlier = get_inliers(x_array)
+with open("maha_dist-all.pkl", 'rb') as f:
+	maha_dist = pickle.load(f)
+
+#sample = 100000
+plot_y = maha_dist
+plot_y = plot_y[plot_y>1000]
+plot_x = np.arange(plot_y.shape[0])
+plt.scatter(plot_x, plot_y, marker='.', c='blue')
+plt.show()
