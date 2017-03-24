@@ -11,6 +11,7 @@ import numpy as np
 from sklearn.externals import joblib
 
 CLASSIFIER_FILE="Trained_classifier.pkl"
+SCALER_FILE="Scaler.pkl"
 
 def predict(X_test):
 	"""This function takes a dataset and predict the class label for each data point
@@ -28,6 +29,8 @@ def predict(X_test):
 	"""
 
 	clf = joblib.load(CLASSIFIER_FILE) 
+	scaler = joblib.load(SCALER_FILE) 
+	X_test = scaler.transform(X_test)
 	test_y = clf.predict(X_test)
 	return test_y 
 

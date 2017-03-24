@@ -36,6 +36,7 @@ from sklearn.preprocessing import StandardScaler, RobustScaler
 INPUT_X_FILE="StudentData/Data_x.pkl"
 INPUT_Y_FILE="StudentData/Data_y.pkl"
 CLASSIFIER_FILE="Trained_classifier.pkl"
+SCALER_FILE="Scaler.pkl"
 
 def get_cov(X):
 	cov = np.cov(X)
@@ -97,9 +98,7 @@ def check_rows(x_array, y_array):
 	
 	sys.exit()
 
-def train(tr_x, tr_y, x_array, y_array, inlier):
-	print ("X data dimension is ", tr_x.shape)
-	print ("Y data dimension is ", tr_y.shape)
+def train(x_array, y_array):
 
 	rng = np.random.RandomState(1)
 	classifiers = {
@@ -132,29 +131,20 @@ def train(tr_x, tr_y, x_array, y_array, inlier):
 		print ("accuracy from training: ", metrics.accuracy_score(tr_y, predicted_Y))
 		'''
 
-		print("ShuffleSplit - train with good data, test with orig data")
+		print("ShuffleSplit")
 		ss = ShuffleSplit(n_splits=5, test_size=0.20, random_state=0)
 		for train_index, test_index in ss.split(x_array):
 
-			'''
-			inlier_tr = inlier[train_index]
-			selected_x = x_array[train_index]
-			inlier_selected_x = selected_x[inlier_tr]
-			selected_y = y_array[train_index]
-			inlier_selected_y = selected_y[inlier_tr]
-			'''
-			# Let's use another way to remove outliers
-			print ("x_Array train: ", x_array[train_index].shape[0])
+			# Remove outliers from training and test set 
 			robust_scaler = RobustScaler()
 			inlier_selected_x = robust_scaler.fit_transform(x_array[train_index])
-			print ("x_Array train transformed: ", inlier_selected_x.shape[0])
 			inlier_test_x = robust_scaler.transform(x_array[test_index])
 
 			score = clf.fit(inlier_selected_x, y_array[train_index]).score(inlier_test_x, y_array[test_index])
 			print("score", score)
-			break;
 
 	joblib.dump(clf, CLASSIFIER_FILE) 
+	joblib.dump(robust_scaler, SCALER_FILE) 
 
 	return robust_scaler
 
@@ -187,40 +177,14 @@ check_pca(x_array)
 # Check the range of each dimension
 #check_dimension(x_array, y_array)
 
-#TODO: check if this transform helps performance
-# normalize -9 to 1, rest to 0
-# x_array= (x_array - x_array.mean()) / x_array.std()
-
-# Remove outliers
-f = open('inlier.pkl', 'rb')
-inlier = pickle.load(f)
-f.close()
-
-print("cov with outlier")
-#get_cov(x_array)
-
-#x_array[x_array> -5] = 0
-#x_array[x_array< -0] = 1
-
-tr_x = x_array[inlier]
-tr_y = y_array[inlier]
-
-print("cov without outlier")
-#get_cov(tr_x)
-
-
-print("cov without outlier with binary input")
-#get_cov(tr_x)
-
-
-scaler = train(tr_x, tr_y, x_array, y_array, inlier)
-rd = np.random.random_integers(0, num_of_data, 1000)
+rd = np.random.random_integers(0, num_of_data, 10000)
+train(x_array[rd], y_array[rd])
 
 predict_start = timer()
-predicted_Y = predict(scaler.transform(x_array[rd]))
+predicted_Y = predict(x_array[rd])
 predict_end = timer()
+end = timer()
+
 print ("accuracy from dup: ", metrics.accuracy_score(y_array[rd], predicted_Y))
 print ("predict time: ", predict_end - predict_start) 
-
-end = timer()
 print (end - start)
