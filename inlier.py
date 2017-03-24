@@ -1,5 +1,5 @@
 print(__doc__)
-
+from timeit import default_timer as timer
 import numpy as np
 import matplotlib.pyplot as plt
 from basic import *
@@ -13,7 +13,7 @@ from sklearn.covariance import EmpiricalCovariance, MinCovDet
 def get_inliers(x_array):
 
 	rows = x_array.shape[0]
-	rows = 100000
+	rows = 100
 	half_rows = int(rows/2)
 
 	# This threashold is predetermined by looking at mahalanobis distance
@@ -21,28 +21,30 @@ def get_inliers(x_array):
 	
 	maha_dist = {}
 	inlier_list = {}
-	for i in range(0,2):
-		if i == 0:
-			X = x_array[0:half_rows,:]
-		else:
-			X = x_array[-half_rows:,:]
+	X = x_array[0:100]
 
-		# fit a Minimum Covariance Determinant (MCD) robust estimator to data
-		robust_cov = MinCovDet().fit(X)
-		maha_dist[i] = robust_cov.mahalanobis(X)
-		inlier_list[i] = maha_dist[i] < 1000
+	# fit a Minimum Covariance Determinant (MCD) robust estimator to data
+	start = timer()
+	robust_cov = MinCovDet().fit(X)
+	end = timer()
+	print("fit time: ", end-start)
+	maha_dist[0] = robust_cov.mahalanobis(X)
+	end2 = timer()
+	print("transform time: ", end2-end)
+#	with open("inlier.pkl", 'wb') as f:
+#		pickle.dump(inlier, f)
+	with open("maha_dist-all.pkl", 'wb') as f:
+		pickle.dump(maha_dist[0], f)
+#	with open("maha_dist-2.pkl", 'wb') as f:
+#		pickle.dump(maha_dist[1], f)
 
-	inlier = np.concatenate([inlier_list[0], inlier_list[1]])
-	maha = np.concatenate([maha_dist[0], maha_dist[1]])
-	with open("inlier.pkl", 'wb') as f:
-		pickle.dump(inlier, f)
-	with open("maha_dist.pkl", 'wb') as f:
-		pickle.dump(maha, f)
 
-	print (inlier[0:50,])
-	print (maha[0:50,])
-	
-	return inlier
+	plot_x = np.arange(rows)
+	plot_y = maha_dist[0]
+	plt.plot(plot_x, plot_y, marker='.', c='blue')
+	plt.show()
+
+	return 1
 
 np.set_printoptions(threshold=np.inf)
 x_array, y_array = get_training_data()
