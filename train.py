@@ -103,21 +103,21 @@ def train(tr_x, tr_y, x_array, y_array, inlier):
 
 	rng = np.random.RandomState(1)
 	classifiers = {
-		"BernoulliNB": BernoulliNB(),
-		"SGDClassifier": SGDClassifier(loss="hinge", penalty="l2", shuffle=True),
+		#"BernoulliNB": BernoulliNB(),
+		#"SGDClassifier": SGDClassifier(loss="hinge", penalty="l2", shuffle=True),
 		#"Decision Tree": tree.DecisionTreeClassifier(),
 		#"KNN": KNeighborsClassifier(n_neighbors=3),
-		"Logistic": LogisticRegression(penalty='l1', tol=0.0001, C=1, fit_intercept=True, intercept_scaling=1, class_weight=None, random_state=None, solver='liblinear', max_iter=100),
+		#"Logistic": LogisticRegression(penalty='l1', tol=0.0001, C=1, fit_intercept=True, intercept_scaling=1, class_weight=None, random_state=None, solver='liblinear', max_iter=100),
 		#"Linear SVM": svm.SVC(kernel='linear', C=0.025),
 		#"AdaBoost": AdaBoostClassifier(),
-		#"AdaBoost estimate 300": AdaBoostClassifier(n_estimators=300),
+		"AdaBoost estimate 500": AdaBoostClassifier(n_estimators=500),
 		#"AdaBoost depth 4": AdaBoostClassifier(DecisionTreeClassifier(max_depth=4)),
 		#"AdaBoost 300 & 4": AdaBoostClassifier(DecisionTreeClassifier(max_depth=4),
 		#			n_estimators=300),
 		#"AdaBoost rng": AdaBoostClassifier(random_state=rng),
 		#"AdaBoost 300 & 4 & rng": AdaBoostClassifier(DecisionTreeClassifier(max_depth=4),
 		#			n_estimators=300, random_state=rng),
-		"GaussianNB": GaussianNB(),
+		#"GaussianNB": GaussianNB(),
 		#"Poly SVM":  svm.SVC(kernel='poly'),
 		#"RBF SVM": svm.SVC(gamma=2, C=1),
 		}
@@ -152,10 +152,11 @@ def train(tr_x, tr_y, x_array, y_array, inlier):
 
 			score = clf.fit(inlier_selected_x, y_array[train_index]).score(inlier_test_x, y_array[test_index])
 			print("score", score)
+			break;
 
 	joblib.dump(clf, CLASSIFIER_FILE) 
 
-	return
+	return robust_scaler
 
 start = timer()
 
@@ -212,9 +213,14 @@ print("cov without outlier with binary input")
 #get_cov(tr_x)
 
 
-train(tr_x, tr_y, x_array, y_array, inlier)
-#predicted_Y = predict(x_array)
-#print ("accuracy from dup: ", metrics.accuracy_score(y_array, predicted_Y))
+scaler = train(tr_x, tr_y, x_array, y_array, inlier)
+rd = np.random.random_integers(0, num_of_data, 1000)
+
+predict_start = timer()
+predicted_Y = predict(scaler.transform(x_array[rd]))
+predict_end = timer()
+print ("accuracy from dup: ", metrics.accuracy_score(y_array[rd], predicted_Y))
+print ("predict time: ", predict_end - predict_start) 
 
 end = timer()
 print (end - start)
