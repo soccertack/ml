@@ -28,6 +28,9 @@ from sklearn.decomposition import PCA
 from sklearn.decomposition import PCA, KernelPCA
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.preprocessing import StandardScaler, RobustScaler
+
 
 
 INPUT_X_FILE="StudentData/Data_x.pkl"
@@ -98,18 +101,23 @@ def train(tr_x, tr_y, x_array, y_array, inlier):
 	print ("X data dimension is ", tr_x.shape)
 	print ("Y data dimension is ", tr_y.shape)
 
+	rng = np.random.RandomState(1)
 	classifiers = {
-		#"BernoulliNB": BernoulliNB(),
-		#"SGDClassifier": SGDClassifier(loss="hinge", penalty="l2", shuffle=True),
+		"BernoulliNB": BernoulliNB(),
+		"SGDClassifier": SGDClassifier(loss="hinge", penalty="l2", shuffle=True),
 		#"Decision Tree": tree.DecisionTreeClassifier(),
 		#"KNN": KNeighborsClassifier(n_neighbors=3),
-		#"Logistic": LogisticRegression(penalty='l1', tol=0.0001, C=1,
-	#			fit_intercept=True, intercept_scaling=1,
-	#			class_weight=None, random_state=None,
-	#			solver='liblinear', max_iter=100),
+		"Logistic": LogisticRegression(penalty='l1', tol=0.0001, C=1, fit_intercept=True, intercept_scaling=1, class_weight=None, random_state=None, solver='liblinear', max_iter=100),
 		#"Linear SVM": svm.SVC(kernel='linear', C=0.025),
-		"AdaBoost": AdaBoostClassifier(),
-		#"GaussianNB": GaussianNB(),
+		#"AdaBoost": AdaBoostClassifier(),
+		#"AdaBoost estimate 300": AdaBoostClassifier(n_estimators=300),
+		#"AdaBoost depth 4": AdaBoostClassifier(DecisionTreeClassifier(max_depth=4)),
+		#"AdaBoost 300 & 4": AdaBoostClassifier(DecisionTreeClassifier(max_depth=4),
+		#			n_estimators=300),
+		#"AdaBoost rng": AdaBoostClassifier(random_state=rng),
+		#"AdaBoost 300 & 4 & rng": AdaBoostClassifier(DecisionTreeClassifier(max_depth=4),
+		#			n_estimators=300, random_state=rng),
+		"GaussianNB": GaussianNB(),
 		#"Poly SVM":  svm.SVC(kernel='poly'),
 		#"RBF SVM": svm.SVC(gamma=2, C=1),
 		}
@@ -118,22 +126,31 @@ def train(tr_x, tr_y, x_array, y_array, inlier):
 
 	for i, (clf_name, clf) in enumerate(classifiers.items()):
 		print (clf_name)
+		'''
 		clf = clf.fit(tr_x, tr_y)
 		predicted_Y = clf.predict(tr_x)
 		print ("accuracy from training: ", metrics.accuracy_score(tr_y, predicted_Y))
+		'''
 
 		print("ShuffleSplit - train with good data, test with orig data")
-		ss = ShuffleSplit(n_splits=3, test_size=0.25, random_state=0)
+		ss = ShuffleSplit(n_splits=5, test_size=0.20, random_state=0)
 		for train_index, test_index in ss.split(x_array):
 
-
+			'''
 			inlier_tr = inlier[train_index]
 			selected_x = x_array[train_index]
 			inlier_selected_x = selected_x[inlier_tr]
 			selected_y = y_array[train_index]
 			inlier_selected_y = selected_y[inlier_tr]
+			'''
+			# Let's use another way to remove outliers
+			print ("x_Array train: ", x_array[train_index].shape[0])
+			robust_scaler = RobustScaler()
+			inlier_selected_x = robust_scaler.fit_transform(x_array[train_index])
+			print ("x_Array train transformed: ", inlier_selected_x.shape[0])
+			inlier_test_x = robust_scaler.transform(x_array[test_index])
 
-			score = clf.fit(inlier_selected_x, inlier_selected_y).score(x_array[test_index], y_array[test_index])
+			score = clf.fit(inlier_selected_x, y_array[train_index]).score(inlier_test_x, y_array[test_index])
 			print("score", score)
 
 	joblib.dump(clf, CLASSIFIER_FILE) 
@@ -179,22 +196,21 @@ inlier = pickle.load(f)
 f.close()
 
 print("cov with outlier")
-get_cov(x_array)
+#get_cov(x_array)
+
+#x_array[x_array> -5] = 0
+#x_array[x_array< -0] = 1
 
 tr_x = x_array[inlier]
 tr_y = y_array[inlier]
 
 print("cov without outlier")
-get_cov(tr_x)
+#get_cov(tr_x)
 
-tr_x[tr_x> -5] = 0
-tr_x[tr_x< -0] = 1
 
 print("cov without outlier with binary input")
-get_cov(tr_x)
+#get_cov(tr_x)
 
-sys.exit()
-tr_x = SelectKBest(chi2, k=2).fit_transform(tr_x, tr_y)
 
 train(tr_x, tr_y, x_array, y_array, inlier)
 #predicted_Y = predict(x_array)
