@@ -24,10 +24,25 @@ from sklearn.feature_selection import chi2
 import sys
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import ShuffleSplit
+from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA, KernelPCA
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import chi2
+
 
 INPUT_X_FILE="StudentData/Data_x.pkl"
 INPUT_Y_FILE="StudentData/Data_y.pkl"
 CLASSIFIER_FILE="Trained_classifier.pkl"
+
+def get_cov(X):
+	cov = np.cov(X)
+	print (cov)
+
+def check_pca(X):
+	return
+	#pca = PCA(n_components=100).fit(X)
+	pca = KernelPCA(kernel="rbf").fit(X)
+	print(pca.explained_variance_ratio_)
 
 def get_training_data():
 	f = open(INPUT_X_FILE, 'rb')
@@ -93,11 +108,12 @@ def train(tr_x, tr_y, x_array, y_array, inlier):
 	#			class_weight=None, random_state=None,
 	#			solver='liblinear', max_iter=100),
 		#"Linear SVM": svm.SVC(kernel='linear', C=0.025),
-		#"AdaBoost": AdaBoostClassifier(),
+		"AdaBoost": AdaBoostClassifier(),
 		#"GaussianNB": GaussianNB(),
 		#"Poly SVM":  svm.SVC(kernel='poly'),
-		"RBF SVM": svm.SVC(gamma=2, C=1),
+		#"RBF SVM": svm.SVC(gamma=2, C=1),
 		}
+
 
 
 	for i, (clf_name, clf) in enumerate(classifiers.items()):
@@ -109,6 +125,7 @@ def train(tr_x, tr_y, x_array, y_array, inlier):
 		print("ShuffleSplit - train with good data, test with orig data")
 		ss = ShuffleSplit(n_splits=3, test_size=0.25, random_state=0)
 		for train_index, test_index in ss.split(x_array):
+
 
 			inlier_tr = inlier[train_index]
 			selected_x = x_array[train_index]
@@ -129,6 +146,7 @@ x_array, y_array = get_training_data()
 num_of_data = x_array.shape[0]
 num_of_dim = x_array.shape[1]
 
+check_pca(x_array)
 #check_rows(x_array, y_array)
 
 # -------------------------------------------------------------
@@ -154,15 +172,29 @@ num_of_dim = x_array.shape[1]
 #TODO: check if this transform helps performance
 # normalize -9 to 1, rest to 0
 # x_array= (x_array - x_array.mean()) / x_array.std()
-#x_array[x_array > -5] = 0
-#x_array[x_array < -0] = 1
 
 # Remove outliers
 f = open('inlier.pkl', 'rb')
 inlier = pickle.load(f)
 f.close()
+
+print("cov with outlier")
+get_cov(x_array)
+
 tr_x = x_array[inlier]
 tr_y = y_array[inlier]
+
+print("cov without outlier")
+get_cov(tr_x)
+
+tr_x[tr_x> -5] = 0
+tr_x[tr_x< -0] = 1
+
+print("cov without outlier with binary input")
+get_cov(tr_x)
+
+sys.exit()
+tr_x = SelectKBest(chi2, k=2).fit_transform(tr_x, tr_y)
 
 train(tr_x, tr_y, x_array, y_array, inlier)
 #predicted_Y = predict(x_array)
