@@ -1,0 +1,9 @@
+X data dimension is  (85628, 100)
+Y data dimension is  (85628,)
+Linear SVM
+accuracy from training:  0.585217452235
+ShuffleSplit - train with good data, test with orig data
+score 0.4952
+score 0.5048
+score 0.50368
+20597.27961341801
