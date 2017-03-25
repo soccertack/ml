@@ -23,5 +23,5 @@ predict_start = timer()
 predicted_Y = predict(x_array)
 predict_end = timer()
 
-print ("accuracy from dup: ", metrics.accuracy_score(y_array, predicted_Y))
+print ("accuracy: ", metrics.accuracy_score(y_array, predicted_Y))
 print ("predict time: ", predict_end - predict_start) 
