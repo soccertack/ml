@@ -89,9 +89,9 @@ def train_mahal(x_array, y_array):
 	print ("maha dist : ", maha_dist1)
 	print ("maha dist size : ", maha_dist1.shape)
 
+	# Create histogram of mahal-distance for each class
 	class1_hist, bins = np.histogram(maha_dist1,bins=np.arange(20000))
 	class2_hist, bins = np.histogram(maha_dist2,bins=np.arange(20000))
-
 
 	print("ShuffleSplit")
 	ss = ShuffleSplit(n_splits=5, test_size=0.20, random_state=0)
@@ -100,33 +100,24 @@ def train_mahal(x_array, y_array):
 		# Remove outliers from training and test set 
 		robust_scaler = RobustScaler()
 		inlier_selected_x = robust_scaler.fit_transform(x_array[train_index])
+		inlier_selected_y = y_array[train_index]
 		inlier_test_x = robust_scaler.transform(x_array[test_index])
 
 		outlier = 0
 		correct = 0
-		for i in range(0,8000):
-			print("-------")
-			print ("idx: "+ str(i))
-			print ("shape: "+ str(inlier_selected_x.shape))
+		for i in range(0,inlier_selected_x.shape[0]):
 			dist1 = robust_cov1.mahalanobis(inlier_selected_x[i:i+1])
-			print ("Dist 1: ", str(dist1))
 			dist1_int = int(dist1)
 			prob1 = class1_hist[dist1_int-2:dist1_int+3]
-			print("Prob: ", prob1)
 			dist2 = robust_cov2.mahalanobis(inlier_selected_x[i:i+1])
-			print ("Dist 2: ", str(dist2))
 			dist2_int = int(dist2)
 			prob2 = class2_hist[dist2_int-2:dist2_int+3]
-			print("Prob: ", prob2)
-			if (prob1.sum() > prob2.sum()) and y_array[i] == 1:
+			if (prob1.sum() > prob2.sum()) and inlier_selected_y[i] == 1:
 				correct +=1
-				print("correct!")
-			if (prob1.sum() < prob2.sum()) and y_array[i] == 2:
+			if (prob1.sum() < prob2.sum()) and inlier_selected_y[i] == 2:
 				correct +=1
-				print("correct!")
-			print ("y: ", y_array[i])
 				
-		print ("corect", correct)
+		print ("score", correct/inlier_selected_x.shape[0])
 	return
 
 def train(x_array, y_array):
@@ -173,6 +164,7 @@ def train(x_array, y_array):
 			score = clf.fit(inlier_selected_x, y_array[train_index]).score(inlier_test_x, y_array[test_index])
 			print("score", score)
 
+	# Save classifier information
 	joblib.dump(clf, CLASSIFIER_FILE) 
 	joblib.dump(robust_scaler, SCALER_FILE) 
 

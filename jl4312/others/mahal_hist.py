@@ -27,7 +27,7 @@ def get_mahal_hist(x_array):
 	print("Start fit 1")
 	start = timer()
 	#Calc Dist class 1
-	robust_cov1 = EllipticEnvelope().fit(X1)
+	robust_cov1 = MinCovDet().fit(X1)
 	end = timer()
 	print("Took ", int(end-start), " seconds")
 	print("Start mahal dist 1")
@@ -39,7 +39,7 @@ def get_mahal_hist(x_array):
 	#Calc Dist class 2
 	print("Start fit 2")
 	start = timer()
-	robust_cov2 = EllipticEnvelope().fit(X2)
+	robust_cov2 = MinCovDet().fit(X2)
 	end = timer()
 	print("Took ", int(end-start), " seconds")
 	print("Start mahal dist 2")
