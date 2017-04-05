@@ -176,6 +176,65 @@ Therefore, the update equation for U is
 \begin{equation*}
 U^{t+1} = U^t - \eta \frac{\partial R}{\partial U}
 \end{equation*}
+
+
+\item the update equation for W
+
+This is only valid for the points X which are selected in the down-sampling
+layers. Since the down-sampling layers except the first one don't have weights,
+we get the derivatve in the first down sampling layer.
+
+\begin{equation*}
+\begin{split}
+\frac{\partial R}{\partial W} & = (\frac{\partial R}{\partial z^1})
+				\frac{\partial z^1} {\partial a^1}
+				\frac{\partial a^1} {\partial W} \\
+				& = (\frac{\partial R}{\partial a^{2}}
+				\frac{\partial a^{2}} {\partial z^{1}})
+				\frac{\partial z^1} {\partial a^1}
+				\frac{\partial a^1} {\partial W} \\
+				& = (\frac{\partial R}{\partial a^{2}})
+				\frac{\partial z^1} {\partial a^1}
+				\frac{\partial a^1} {\partial W} \text{(------ *note 1)}\\
+				& = (\frac{\partial R}{\partial a^{q+1}})
+				\frac{\partial z^1} {\partial a^1}
+				\frac{\partial a^1} {\partial W} \text{(------ *note 2)}\\
+				& = \bigg( - \frac{1}{N} \sum_{n=1}^{N} (y - z^{q+2})
+					z^{q+2}(1-z^{q+2})
+					V
+					z^{q+1}(1-z^{q+1}) \bigg)
+				\frac{\partial z^1} {\partial a^1}
+				\frac{\partial a^1} {\partial W} \text{(------ *note 3)}\\
+				& = \bigg( - \frac{1}{N} \sum_{n=1}^{N} (y - z^{q+2})
+					z^{q+2}(1-z^{q+2})
+					V
+					z^{q+1}(1-z^{q+1}) \bigg)
+				z^1 (1-z^1)
+				\frac{\partial a^1} {\partial W} \\
+				& = \bigg( - \frac{1}{N} \sum_{n=1}^{N} (y - z^{q+2})
+					z^{q+2}(1-z^{q+2})
+					V
+					z^{q+1}(1-z^{q+1}) \bigg)
+				z^1 (1-z^1)
+				\sum_{k,l} x_{i+k,j+l} \\
+\end{split}
+\end{equation*}
+
+Therefore, the update equation for W is
+\begin{equation*}
+W^{t+1} = W^t - \eta \frac{\partial R}{\partial W}
+\end{equation*}
+
+Here's detailed explanations for each note.
+
+note 1: The term (da2/dz1) is 1 if this point survived in the last down-sampling layer and 0 if not. We are only considering points which survived, so it's 1.
+
+note 2: Since the down-samplying layers don't have weight, the gradient is
+propogated without change. So we can use the gradient from q+1
+layer. 
+
+note 3: We expand dR/da(q+1) from the previous derivative. No surprise.
+
 \end{enumerate}
 
 
