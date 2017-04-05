@@ -3,3 +3,9 @@
 .vim_mru_files
 *.pyc
 __pycache__
+*.swp
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
