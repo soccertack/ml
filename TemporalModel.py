@@ -4,6 +4,7 @@ import random as rd
 class TemporalModel:
 	def __init__(self, alpha, mu, sigma):
 		# TODO: verify params
+		# TODO: Check the sum of each row of alpha is 1
 		self.alpha= alpha
 		self.mu = mu
 		self.sigma = sigma
@@ -26,14 +27,14 @@ class TemporalModel:
 				acc_prob += self.alpha[curr_idx][i]
 				if r <= acc_prob:
 					next_idx = i
+					print ("next_idx: %d" % next_idx)
 					break;
 
 			assert next_idx != self.K, "next_idx is not set"
-			curr_idx = next_idx
-				
 		
 			#Generate y_i
 			Y[j] = np.random.multivariate_normal(self.mu[curr_idx], self.sigma[curr_idx])
+			curr_idx = next_idx
 
 		print (Y)
 		return Y
