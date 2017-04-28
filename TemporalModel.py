@@ -36,7 +36,7 @@ class TemporalModel:
 		# q0 = 0
 		curr_idx = 0
 		Y = np.empty([T, 2])
-		states = np.empty(T)
+		states = np.empty(T, dtype=np.int)
 
 		# Generate T samples
 		for j in range(0, T):
@@ -68,13 +68,33 @@ class TemporalModel:
 		posterior = np.multiply(prob, prior)
 		norm = np.sum(posterior)
 		posterior /= norm
-		print ("post: ", posterior)
+		#print ("post: ", posterior)
 		return posterior
 
+	# return T-long array of states
+	def SampleStates(self, Y):
+		
+		T = Y.shape[0]
+		states = np.empty([T])
+		states = states.astype(int)
 
+		# We know that the first state is 0
+		states[0] = 0
+		curr_state = 0
+		
+		# TODO: how to determine prior?
+		prior = np.array([1/3, 1/3, 1/3])
 
+		for j in range(1, T):
+			# calc probability of jth state based on jth input and j-1th state
+			mul = np.multiply(self.Posterior(Y[j], prior), self.alpha[states[j-1]])
+			# Normalize
+			norm = np.sum(mul)
+			mul/= norm
 
+			states[j] = self.Sample_state(mul)
 
+		return states
 
 
 

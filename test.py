@@ -30,8 +30,8 @@ alpha[2] = [0.0, 0.1, 0.9]
 print (alpha.shape)
 mu = np.empty([K, 2])
 mu[0] = [0, 0]
-mu[1] = [1, 1]
-mu[2] = [0, 1]
+mu[1] = [3, 3]
+mu[2] = [0, 3]
 
 sigma = np.empty([K, 2, 2])
 sigma[0] = np.identity(2)
@@ -39,7 +39,7 @@ sigma[1] = np.identity(2)
 sigma[2] = np.identity(2)
 
 t = TemporalModel(alpha, mu, sigma)
-Y, states = t.Simulate_states(1000)
+Y, states = t.Simulate_states(10)
 
 print("0th y :", Y[0])
 print("1th y :", Y[1])
@@ -62,3 +62,7 @@ t.Posterior(Y[0], prior)
 t.Posterior(Y[1], prior)
 t.Posterior(Y[2], prior)
 
+sampled_states = t.SampleStates(Y)
+
+print (states)
+print (sampled_states)
