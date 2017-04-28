@@ -39,11 +39,14 @@ sigma[1] = np.identity(2)
 sigma[2] = np.identity(2)
 
 t = TemporalModel(alpha, mu, sigma)
-Y = t.Simulate(1000)
+Y, states = t.Simulate_states(1000)
 
 print("0th y :", Y[0])
 print("1th y :", Y[1])
 print("2th y :", Y[2])
+print("0th y state :", states[0])
+print("1th y state :", states[1])
+print("2th y state :", states[2])
 
 plt.scatter(Y[:,0],Y[:,1], marker='+', s=1)
 #plt.show()
@@ -58,5 +61,4 @@ prior = np.array([1/3, 1/3, 1/3])
 t.Posterior(Y[0], prior)
 t.Posterior(Y[1], prior)
 t.Posterior(Y[2], prior)
-
 

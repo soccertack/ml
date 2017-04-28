@@ -12,19 +12,23 @@ class TemporalModel:
 		self.K = self.alpha.shape[0]
 
 	def Simulate(self, T):
+		Y, states = self.Simulate_states(T)
+		return Y
+
+	def Simulate_states(self, T):
 		
 		# q0 = 0
 		curr_idx = 0
 		Y = np.empty([T, 2])
+		states = np.empty(T)
 
 		# Generate T samples
 		for j in range(0, T):
 
-			if j < 3:
-				print ("%dth state: %d" % (j, curr_idx))
 			#Generate y_j
 			Y[j] = np.random.multivariate_normal(
 				self.mu[curr_idx], self.sigma[curr_idx])
+			states[j] = curr_idx
 
 			#Get next state
 			r = rd.random()
@@ -44,7 +48,7 @@ class TemporalModel:
 			curr_idx = next_idx
 
 		#print (Y)
-		return Y
+		return Y, states
 
 	def Probability_of(self, y):
 
@@ -52,7 +56,7 @@ class TemporalModel:
 		for j in range(0, self.K):
 			prob[j] = scipy.stats.multivariate_normal(
 					self.mu[j], self.sigma[j]).pdf(y)
-		print ("prob: ", prob)
+		#print ("prob: ", prob)
 		return prob
 
 
