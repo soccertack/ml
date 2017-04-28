@@ -1,5 +1,6 @@
 import numpy as np
 import random as rd
+import scipy.stats
 
 class TemporalModel:
 	def __init__(self, alpha, mu, sigma):
@@ -33,8 +34,33 @@ class TemporalModel:
 			assert next_idx != self.K, "next_idx is not set"
 		
 			#Generate y_i
-			Y[j] = np.random.multivariate_normal(self.mu[curr_idx], self.sigma[curr_idx])
+			Y[j] = np.random.multivariate_normal(
+				self.mu[curr_idx], self.sigma[curr_idx])
 			curr_idx = next_idx
 
 		print (Y)
 		return Y
+
+	def Probability_of(self, y):
+
+		prob = np.empty([self.K])
+		for j in range(0, self.K):
+			prob[j] = scipy.stats.multivariate_normal(
+					self.mu[j], self.sigma[j]).pdf(y)
+		print (prob)
+		return prob
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

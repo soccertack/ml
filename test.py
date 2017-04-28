@@ -42,4 +42,7 @@ t = TemporalModel(alpha, mu, sigma)
 Y = t.Simulate(1000)
 
 plt.scatter(Y[:,0],Y[:,1], marker='+', s=1)
-plt.show()
+#plt.show()
+
+print(Y[0])
+t.Probability_of(Y[0])
