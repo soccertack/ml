@@ -19,6 +19,14 @@ class TemporalModel:
 
 		# Generate T samples
 		for j in range(0, T):
+
+			if j < 3:
+				print ("%dth state: %d" % (j, curr_idx))
+			#Generate y_j
+			Y[j] = np.random.multivariate_normal(
+				self.mu[curr_idx], self.sigma[curr_idx])
+
+			#Get next state
 			r = rd.random()
 			acc_prob = 0	
 			next_idx = self.K
@@ -28,17 +36,14 @@ class TemporalModel:
 				acc_prob += self.alpha[curr_idx][i]
 				if r <= acc_prob:
 					next_idx = i
-					print ("next_idx: %d" % next_idx)
+					#print ("next_idx: %d" % next_idx)
 					break;
 
 			assert next_idx != self.K, "next_idx is not set"
 		
-			#Generate y_i
-			Y[j] = np.random.multivariate_normal(
-				self.mu[curr_idx], self.sigma[curr_idx])
 			curr_idx = next_idx
 
-		print (Y)
+		#print (Y)
 		return Y
 
 	def Probability_of(self, y):
@@ -47,12 +52,18 @@ class TemporalModel:
 		for j in range(0, self.K):
 			prob[j] = scipy.stats.multivariate_normal(
 					self.mu[j], self.sigma[j]).pdf(y)
-		print (prob)
+		print ("prob: ", prob)
 		return prob
 
 
+	def Posterior(self, y, prior):
 
-
+		prob = self.Probability_of(y)
+		posterior = np.multiply(prob, prior)
+		norm = np.sum(posterior)
+		posterior /= norm
+		print ("post: ", posterior)
+		return posterior
 
 
 
