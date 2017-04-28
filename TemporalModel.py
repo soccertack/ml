@@ -15,6 +15,22 @@ class TemporalModel:
 		Y, states = self.Simulate_states(T)
 		return Y
 
+	# prob: a 1xK array
+	def Sample_state(self, prob):
+		r = rd.random()
+		acc_prob = 0	
+		state_sampled = self.K
+
+		for i in range(0, self.K):
+			# Compare from the first element
+			acc_prob += prob[i]
+			if r <= acc_prob:
+				state_sampled = i
+				break;
+
+		assert state_sampled != self.K, "state_sampled is not set"
+		return state_sampled
+
 	def Simulate_states(self, T):
 		
 		# q0 = 0
@@ -30,22 +46,8 @@ class TemporalModel:
 				self.mu[curr_idx], self.sigma[curr_idx])
 			states[j] = curr_idx
 
-			#Get next state
-			r = rd.random()
-			acc_prob = 0	
-			next_idx = self.K
-
-			for i in range(0, self.K):
-				# Compare from the first column
-				acc_prob += self.alpha[curr_idx][i]
-				if r <= acc_prob:
-					next_idx = i
-					#print ("next_idx: %d" % next_idx)
-					break;
-
-			assert next_idx != self.K, "next_idx is not set"
-		
-			curr_idx = next_idx
+			# Update the next state
+			curr_idx = self.Sample_state(self.alpha[curr_idx])
 
 		#print (Y)
 		return Y, states
