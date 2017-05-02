@@ -28,10 +28,12 @@ alpha[0] = [0.5, 0.3, 0.2]
 alpha[1] = [0.4, 0.2, 0.4]
 alpha[2] = [0.0, 0.1, 0.9]
 print (alpha.shape)
+
+Distance = 10
 mu = np.empty([K, 2])
 mu[0] = [0, 0]
-mu[1] = [3, 3]
-mu[2] = [0, 3]
+mu[1] = [Distance, Distance]
+mu[2] = [0, Distance]
 
 sigma = np.empty([K, 2, 2])
 sigma[0] = np.identity(2)
@@ -66,3 +68,4 @@ sampled_states = t.SampleStates(Y)
 
 print (states)
 print (sampled_states)
+print (np.array_equal(states, sampled_states))

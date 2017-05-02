@@ -87,7 +87,7 @@ class TemporalModel:
 
 		for j in range(1, T):
 			# calc probability of jth state based on jth input and j-1th state
-			mul = np.multiply(self.Posterior(Y[j], prior), self.alpha[states[j-1]])
+			mul = np.multiply(self.Probability_of(Y[j]), self.alpha[states[j-1]])
 			# Normalize
 			norm = np.sum(mul)
 			mul/= norm
@@ -95,9 +95,4 @@ class TemporalModel:
 			states[j] = self.Sample_state(mul)
 
 		return states
-
-
-
-
-
 
