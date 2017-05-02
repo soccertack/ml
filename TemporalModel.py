@@ -15,7 +15,7 @@ class TemporalModel:
 		Y, states = self.Simulate_states(T)
 		return Y
 
-	# prob: a 1xK array
+	# prob: a 1xK array, sum(prob) should be 1
 	def Sample_state(self, prob):
 		r = rd.random()
 		acc_prob = 0	
@@ -82,17 +82,10 @@ class TemporalModel:
 		states[0] = 0
 		curr_state = 0
 		
-		# TODO: how to determine prior?
-		prior = np.array([1/3, 1/3, 1/3])
-
 		for j in range(1, T):
 			# calc probability of jth state based on jth input and j-1th state
-			mul = np.multiply(self.Probability_of(Y[j]), self.alpha[states[j-1]])
-			# Normalize
-			norm = np.sum(mul)
-			mul/= norm
-
-			states[j] = self.Sample_state(mul)
+			posterior = self.Posterior(Y[j], self.alpha[states[j-1]])
+			states[j] = self.Sample_state(posterior)
 
 		return states
 
