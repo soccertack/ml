@@ -41,7 +41,7 @@ sigma[1] = np.identity(2)
 sigma[2] = np.identity(2)
 
 t = TemporalModel(alpha, mu, sigma)
-Y, states = t.Simulate_states(10)
+Y, states = t.Simulate_states(10000)
 
 print("0th y :", Y[0])
 print("1th y :", Y[1])
@@ -66,6 +66,9 @@ t.Posterior(Y[2], prior)
 
 sampled_states = t.SampleStates(Y)
 
-print (states)
-print (sampled_states)
+print (states[0:20])
+print (sampled_states[0:20])
 print (np.array_equal(states, sampled_states))
+
+print ("Gibbs")
+t.SampleGibbsLike(Y)

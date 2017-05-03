@@ -16,6 +16,7 @@ class TemporalModel:
 		return Y
 
 	# prob: a 1xK array, sum(prob) should be 1
+	# return state [0, K-1]
 	def Sample_state(self, prob):
 		r = rd.random()
 		acc_prob = 0	
@@ -71,7 +72,7 @@ class TemporalModel:
 		#print ("post: ", posterior)
 		return posterior
 
-	# return T-long array of states
+	# return T-long array of states [0,K-1]
 	def SampleStates(self, Y):
 		
 		T = Y.shape[0]
@@ -89,3 +90,66 @@ class TemporalModel:
 
 		return states
 
+	def SampleGibbsLike(self, Y):
+
+		#TODO: this should be loop
+
+		# At least, we know K.
+		K = self.K
+
+		#TODO: temporarily assume K = 3, and hardcode all model param
+		K = 3
+		alpha = np.empty([K, K])
+		alpha[0] = [0.2, 0.2, 0.6]
+		alpha[1] = [0.2, 0.2, 0.6]
+		alpha[2] = [0.2, 0.2, 0.6]
+
+		# Set mu and sigma the same. Check we get better alpha
+		Distance = 10
+		mu = np.empty([K, 2])
+		mu[0] = [0, 0]
+		mu[1] = [Distance, Distance]
+		mu[2] = [0, Distance]
+
+		sigma = np.empty([K, 2, 2])
+		sigma[0] = np.identity(2)
+		sigma[1] = np.identity(2)
+		sigma[2] = np.identity(2)
+
+		t = TemporalModel(alpha, mu, sigma)
+		# We are sampling using true alpha, not the prior we would get
+		sampled_states = self.SampleStates(Y)
+		print ("From SampleGibbsLike")
+		print (sampled_states)
+
+		# Tally pseudocounts
+		prior = np.zeros([self.K])
+		avg = np.zeros([self.K, 2])
+		sigma = np.zeros([self.K])
+
+		new_alpha = np.zeros([K, K])
+
+		T = Y.shape[0]
+		for j in range(0, T):
+			s_state = sampled_states[j]
+			prior[s_state] += 1
+			avg[s_state] += Y[j]
+
+			if j == 0:
+				continue
+			
+			p_state = sampled_states[j-1]
+			if p_state == 0:
+				print (s_state)
+			new_alpha[p_state][s_state] +=1
+
+		print (new_alpha)
+		prior = prior/T
+		avg = avg/T
+
+		# TODO: covariance matrix 
+		# use np.cov
+
+
+
+		
