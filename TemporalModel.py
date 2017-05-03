@@ -1,6 +1,8 @@
 import numpy as np
 import random as rd
 import scipy.stats
+import matplotlib.pyplot as plt
+import matplotlib
 
 class TemporalModel:
 	def __init__(self, alpha, mu, sigma):
@@ -90,12 +92,11 @@ class TemporalModel:
 
 		return states
 
-	def SampleGibbsLike(self, Y):
-
-		#TODO: this should be loop
-
+	def GibbsInit(self, Y):
 		# At least, we know K.
 		K = self.K
+
+		T = Y.shape[0]
 
 		#TODO: temporarily assume K = 3, and hardcode all model param
 		K = 3
@@ -117,52 +118,75 @@ class TemporalModel:
 		alpha[2] = [r31, r32, r33]
 
 		print("init alpha")
-		print(alpha)
+		print(alpha.astype(float))
 
 		# Set mu and sigma the same. Check we get better alpha
-		Distance = 10
 		mu = np.empty([K, 2])
-		mu[0] = [0, 0]
-		mu[1] = [Distance, Distance]
-		mu[2] = [0, Distance]
+		mu[0] = Y[rd.randint(0,T)]
+		mu[1] = Y[rd.randint(0,T)]
+		mu[2] = Y[rd.randint(0,T)]
+		print ("init mu")
+		print(mu.astype(float))
 
 		sigma = np.empty([K, 2, 2])
 		sigma[0] = np.identity(2)
 		sigma[1] = np.identity(2)
 		sigma[2] = np.identity(2)
 
-		t = TemporalModel(alpha, mu, sigma)
-		# We are sampling using true alpha, not the prior we would get
-		sampled_states = t.SampleStates(Y)
-		print ("From SampleGibbsLike")
-		print (sampled_states)
+		return alpha, mu, sigma
 
-		# Tally pseudocounts
-		prior = np.zeros([self.K])
-		avg = np.zeros([self.K, 2])
-		sigma = np.zeros([self.K])
-
-		new_alpha = np.zeros([K, K])
-
-		T = Y.shape[0]
-		for j in range(0, T):
-			s_state = sampled_states[j]
-			prior[s_state] += 1
-			avg[s_state] += Y[j]
-
-			if j == 0:
-				continue
-			
-			p_state = sampled_states[j-1]
-			new_alpha[p_state][s_state] +=1
-
-		print (new_alpha)
-		prior = prior/T
-		avg = avg/T
-
-		# TODO: covariance matrix 
-		# use np.cov
+	def SampleGibbsLike(self, Y):
 
 
+		K = self.K
+		alpha, mu, sigma = self.GibbsInit(Y)
+		iterations = 10
+		for j in range(0, iterations):
+			#TODO: this should be loop
 
+
+			t = TemporalModel(alpha, mu, sigma)
+			# We are sampling using true alpha, not the prior we would get
+			sampled_states = t.SampleStates(Y)
+			print ("From SampleGibbsLike")
+			print (sampled_states)
+
+			mu_class=[1, 2, 3]
+			colors = ['red','green','blue','purple']
+			plt.scatter(Y[:,0],Y[:,1], c=sampled_states,cmap=matplotlib.colors.ListedColormap(colors),marker='+', s=1)
+			plt.scatter(mu[:,0],mu[:,1], c=mu_class,cmap=matplotlib.colors.ListedColormap(colors), s = 80)
+			plt.show()
+			plt.close()
+
+			# Tally pseudocounts
+			avg = np.zeros([self.K, 2])
+			# TODO: Don't touch sigma yet
+			#sigma = np.zeros([self.K])
+
+			new_alpha = np.zeros([K, K])
+			new_mu = np.empty([K, 2])
+
+			T = Y.shape[0]
+			for j in range(0, T):
+				s_state = sampled_states[j]
+				new_mu[s_state] += Y[j]
+
+				if j == 0:
+					continue
+				
+				p_state = sampled_states[j-1]
+				new_alpha[p_state][s_state] +=1
+
+
+			mu = new_mu/T
+			l1_norm = np.linalg.norm(new_alpha, axis=1, ord=1)
+			alpha = new_alpha/l1_norm.reshape(3,1)
+			print ("new normalized alpha")
+			print (alpha.astype(float))
+			print ("new mu")
+			print (mu.astype(float))
+
+
+			# TODO: covariance matrix 
+			# use np.cov
 		

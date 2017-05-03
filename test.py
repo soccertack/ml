@@ -1,6 +1,7 @@
 from TemporalModel import *
 import matplotlib.pyplot as plt
 
+np.set_printoptions(precision=2)
 '''
 # The most simple case
 # K = 1 (one class)
@@ -50,7 +51,7 @@ print("0th y state :", states[0])
 print("1th y state :", states[1])
 print("2th y state :", states[2])
 
-plt.scatter(Y[:,0],Y[:,1], marker='+', s=1)
+#plt.scatter(Y[:,0],Y[:,1], marker='+', s=1)
 #plt.show()
 
 '''
@@ -59,16 +60,11 @@ t.Probability_of(Y[1])
 t.Probability_of(Y[2])
 '''
 
-prior = np.array([1/3, 1/3, 1/3])
-t.Posterior(Y[0], prior)
-t.Posterior(Y[1], prior)
-t.Posterior(Y[2], prior)
+#sampled_states = t.SampleStates(Y)
 
-sampled_states = t.SampleStates(Y)
-
-print (states[0:20])
-print (sampled_states[0:20])
-print (np.array_equal(states, sampled_states))
+#print (states[0:20])
+#print (sampled_states[0:20])
+#print (np.array_equal(states, sampled_states))
 
 print ("Gibbs")
 t.SampleGibbsLike(Y)
