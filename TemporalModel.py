@@ -100,9 +100,24 @@ class TemporalModel:
 		#TODO: temporarily assume K = 3, and hardcode all model param
 		K = 3
 		alpha = np.empty([K, K])
-		alpha[0] = [0.2, 0.2, 0.6]
-		alpha[1] = [0.2, 0.2, 0.6]
-		alpha[2] = [0.2, 0.2, 0.6]
+		r11 = rd.random()
+		r12 = rd.uniform(0, 1 - r11)
+		r13 = 1 - r11 - r12
+
+		r21 = rd.random()
+		r22 = rd.uniform(0, 1 - r21)
+		r23 = 1 - r21 - r22
+
+		r31 = rd.random()
+		r32 = rd.uniform(0, 1 - r31)
+		r33 = 1 - r31 - r32
+
+		alpha[0] = [r11, r12, r13]
+		alpha[1] = [r21, r22, r23]
+		alpha[2] = [r31, r32, r33]
+
+		print("init alpha")
+		print(alpha)
 
 		# Set mu and sigma the same. Check we get better alpha
 		Distance = 10
@@ -118,7 +133,7 @@ class TemporalModel:
 
 		t = TemporalModel(alpha, mu, sigma)
 		# We are sampling using true alpha, not the prior we would get
-		sampled_states = self.SampleStates(Y)
+		sampled_states = t.SampleStates(Y)
 		print ("From SampleGibbsLike")
 		print (sampled_states)
 
@@ -139,8 +154,6 @@ class TemporalModel:
 				continue
 			
 			p_state = sampled_states[j-1]
-			if p_state == 0:
-				print (s_state)
 			new_alpha[p_state][s_state] +=1
 
 		print (new_alpha)
