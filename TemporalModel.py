@@ -70,7 +70,8 @@ class TemporalModel:
 		prob = self.Probability_of(y)
 		posterior = np.multiply(prob, prior)
 		norm = np.sum(posterior)
-		posterior /= norm
+		if norm != 0:
+			posterior /= norm
 		#print ("post: ", posterior)
 		return posterior
 
@@ -101,30 +102,19 @@ class TemporalModel:
 		#TODO: temporarily assume K = 3, and hardcode all model param
 		K = 3
 		alpha = np.empty([K, K])
-		r11 = rd.random()
-		r12 = rd.uniform(0, 1 - r11)
-		r13 = 1 - r11 - r12
 
-		r21 = rd.random()
-		r22 = rd.uniform(0, 1 - r21)
-		r23 = 1 - r21 - r22
-
-		r31 = rd.random()
-		r32 = rd.uniform(0, 1 - r31)
-		r33 = 1 - r31 - r32
-
-		alpha[0] = [r11, r12, r13]
-		alpha[1] = [r21, r22, r23]
-		alpha[2] = [r31, r32, r33]
+		alpha[0] = np.random.dirichlet(np.ones(3),size=1)
+		alpha[1] = np.random.dirichlet(np.ones(3),size=1)
+		alpha[2] = np.random.dirichlet(np.ones(3),size=1)
 
 		print("init alpha")
 		print(alpha.astype(float))
 
 		# Set mu and sigma the same. Check we get better alpha
 		mu = np.empty([K, 2])
-		mu[0] = Y[rd.randint(0,T)]
-		mu[1] = Y[rd.randint(0,T)]
-		mu[2] = Y[rd.randint(0,T)]
+		mu[0] = Y[np.random.randint(T)]
+		mu[1] = Y[np.random.randint(T)]
+		mu[2] = Y[np.random.randint(T)]
 		print ("init mu")
 		print(mu.astype(float))
 
@@ -151,24 +141,31 @@ class TemporalModel:
 			print ("From SampleGibbsLike")
 			print (sampled_states)
 
+			for i in range(0, 10):
+				print("%dth y :" % i, Y[i])
+
 			mu_class=[1, 2, 3]
 			colors = ['red','green','blue','purple']
-			plt.scatter(Y[:,0],Y[:,1], c=sampled_states,cmap=matplotlib.colors.ListedColormap(colors),marker='+', s=1)
-			plt.scatter(mu[:,0],mu[:,1], c=mu_class,cmap=matplotlib.colors.ListedColormap(colors), s = 80)
+
+			plt.scatter(Y[:,0],Y[:,1], c=sampled_states,cmap=matplotlib.colors.ListedColormap(colors),marker='+', s=10)
+			plt.scatter(mu[:,0],mu[:,1], c=mu_class,cmap=matplotlib.colors.ListedColormap(colors), s = 50)
+
+			plt.title('sampled states give mu')
+
+			plt.axis([-2, 12, -2, 12])
 			plt.show()
 			plt.close()
 
-			# Tally pseudocounts
-			avg = np.zeros([self.K, 2])
 			# TODO: Don't touch sigma yet
 			#sigma = np.zeros([self.K])
 
 			new_alpha = np.zeros([K, K])
-			new_mu = np.empty([K, 2])
+			new_mu = np.zeros([K, 2])
 
 			T = Y.shape[0]
 			for j in range(0, T):
 				s_state = sampled_states[j]
+				print ("%dth class %d, " % (j, s_state), Y[j])
 				new_mu[s_state] += Y[j]
 
 				if j == 0:
@@ -177,15 +174,27 @@ class TemporalModel:
 				p_state = sampled_states[j-1]
 				new_alpha[p_state][s_state] +=1
 
+			print ("new mu before norm")
+			print (new_mu.astype(float))
 
-			mu = new_mu/T
 			l1_norm = np.linalg.norm(new_alpha, axis=1, ord=1)
 			alpha = new_alpha/l1_norm.reshape(3,1)
+			mu = new_mu/l1_norm.reshape(3,1)
 			print ("new normalized alpha")
 			print (alpha.astype(float))
 			print ("new mu")
 			print (mu.astype(float))
 
+			for i in range(0, 10):
+				print("%dth y :" % i, Y[i])
+			plt.scatter(Y[:,0],Y[:,1], c=sampled_states,cmap=matplotlib.colors.ListedColormap(colors),marker='+', s=1)
+			plt.scatter(mu[:,0],mu[:,1], c=mu_class,cmap=matplotlib.colors.ListedColormap(colors), s = 100)
+
+			plt.title('New mu given data')
+
+			plt.axis([-2, 12, -2, 12])
+			plt.show()
+			plt.close()
 
 			# TODO: covariance matrix 
 			# use np.cov

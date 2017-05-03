@@ -32,7 +32,7 @@ print (alpha.shape)
 
 Distance = 10
 mu = np.empty([K, 2])
-mu[0] = [0, 0]
+mu[0] = [Distance/2, 0]
 mu[1] = [Distance, Distance]
 mu[2] = [0, Distance]
 
@@ -42,14 +42,11 @@ sigma[1] = np.identity(2)
 sigma[2] = np.identity(2)
 
 t = TemporalModel(alpha, mu, sigma)
-Y, states = t.Simulate_states(10000)
+Y, states = t.Simulate_states(1000)
 
-print("0th y :", Y[0])
-print("1th y :", Y[1])
-print("2th y :", Y[2])
-print("0th y state :", states[0])
-print("1th y state :", states[1])
-print("2th y state :", states[2])
+for i in range(0, 10):
+	print("%dth y :" % i, Y[i])
+	print("%dth y state :" % i, states[i])
 
 #plt.scatter(Y[:,0],Y[:,1], marker='+', s=1)
 #plt.show()
