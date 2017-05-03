@@ -41,12 +41,19 @@ sigma[0] = np.identity(2)
 sigma[1] = np.identity(2)
 sigma[2] = np.identity(2)
 
-t = TemporalModel(alpha, mu, sigma)
-Y, states = t.Simulate_states(1000)
+print ("true alpha")
+print (alpha)
+print ("true mu")
+print (mu)
 
+t = TemporalModel(alpha, mu, sigma)
+Y, true_states = t.Simulate_states(1000)
+
+'''
 for i in range(0, 10):
 	print("%dth y :" % i, Y[i])
 	print("%dth y state :" % i, states[i])
+'''
 
 #plt.scatter(Y[:,0],Y[:,1], marker='+', s=1)
 #plt.show()
@@ -63,5 +70,14 @@ t.Probability_of(Y[2])
 #print (sampled_states[0:20])
 #print (np.array_equal(states, sampled_states))
 
-print ("Gibbs")
-t.SampleGibbsLike(Y)
+#print ("Gibbs")
+alpha_list, mu_list, sigma_list, sampled_states_list, iterations = t.SampleGibbsLike(Y)
+
+for j in range(0, iterations)
+
+	alpha_diff = np.linalg.norm(alpha - alpha_list[i])
+	mu_diff = np.linalg.norm(mu - mu_list[i])
+	state_diff = np.count_nonzero(true_states, sampled_states_list[i])
+
+
+

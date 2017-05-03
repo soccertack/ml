@@ -96,58 +96,78 @@ class TemporalModel:
 	def GibbsInit(self, Y):
 		# At least, we know K.
 		K = self.K
-
 		T = Y.shape[0]
 
-		#TODO: temporarily assume K = 3, and hardcode all model param
-		K = 3
 		alpha = np.empty([K, K])
+		mu = np.empty([K, 2])
+		sigma = np.empty([K, 2, 2])
 
-		alpha[0] = np.random.dirichlet(np.ones(3),size=1)
-		alpha[1] = np.random.dirichlet(np.ones(3),size=1)
-		alpha[2] = np.random.dirichlet(np.ones(3),size=1)
+		x_max = float("-inf") 
+		x_min = float("inf")
+		y_max = float("-inf") 
+		y_min = float("inf")
+		for j in range(0, K):
+			alpha[j] = np.random.dirichlet(np.ones(K),size=1)
+			sigma[j] = np.identity(2)
 
+		for j in range(0, T):
+			if (Y[j][0] > x_max):
+				x_max = Y[j][0]
+			if (Y[j][0] < x_min):
+				x_min = Y[j][0]
+
+			if (Y[j][1] > y_max):
+				y_max = Y[j][1]
+			if (Y[j][1] < y_min):
+				y_min = Y[j][1]
+
+		print (x_min, x_max)
+		print (y_min, y_max)
+
+		for j in range(0, K):
+			x = np.random.uniform(x_min.astype(int), x_max.astype(int), 1)
+			y = np.random.uniform(y_min.astype(int), y_max.astype(int), 1)
+			print (x, y)
+			mu[j] = np.array([x, y]).reshape(1,2)
 		print("init alpha")
 		print(alpha.astype(float))
 
 		# Set mu and sigma the same. Check we get better alpha
-		mu = np.empty([K, 2])
-		mu[0] = Y[np.random.randint(T)]
-		mu[1] = Y[np.random.randint(T)]
-		mu[2] = Y[np.random.randint(T)]
 		print ("init mu")
 		print(mu.astype(float))
-
-		sigma = np.empty([K, 2, 2])
-		sigma[0] = np.identity(2)
-		sigma[1] = np.identity(2)
-		sigma[2] = np.identity(2)
 
 		return alpha, mu, sigma
 
 	def SampleGibbsLike(self, Y):
 
-
 		K = self.K
+		T = Y.shape[0]
 		alpha, mu, sigma = self.GibbsInit(Y)
-		iterations = 10
-		for j in range(0, iterations):
-			#TODO: this should be loop
+		max_iterations = 100
+
+		alpha_list = []
+		mu_list = []
+		sigma_list = []
+		sampled_states_list = []
+
+		
+		for j in range(0, max_iterations):
+
+			# We are sampling using true alpha, not the prior we would get
+
+			alpha_list.append(alpha)
+			mu_list.append(mu)
+			sigma_list.append(sigma)
 
 			t = TemporalModel(alpha, mu, sigma)
-			# We are sampling using true alpha, not the prior we would get
 			sampled_states = t.SampleStates(Y)
-			print ("From SampleGibbsLike")
-			print (sampled_states)
+			sampled_states_list.append(sampled_states)
 
 			if j!=0:
 				diff = np.count_nonzero(sampled_states != prev_states)
 				print ("diff: %d" % diff)
-				if diff == 0:
+				if diff < T*0.05:
 					break;
-
-			for i in range(0, 10):
-				print("%dth y :" % i, Y[i])
 
 			mu_class=[1, 2, 3]
 			colors = ['red','green','blue','purple']
@@ -157,8 +177,8 @@ class TemporalModel:
 
 			plt.title('%d sampled states give mu' %j)
 
-			plt.axis([-2, 12, -2, 12])
-			plt.show()
+			plt.axis([-2, 30, -2, 30])
+			#plt.show()
 			plt.close()
 
 			# TODO: Don't touch sigma yet
@@ -167,41 +187,45 @@ class TemporalModel:
 			new_alpha = np.zeros([K, K])
 			new_mu = np.zeros([K, 2])
 
-			T = Y.shape[0]
 			for l in range(0, T):
 				s_state = sampled_states[l]
 				#print ("%dth class %d, " % (j, s_state), Y[j])
 				new_mu[s_state] += Y[l]
 
+				# Don't sample state trasition if this is the first state
 				if l == 0:
 					continue
 				
 				p_state = sampled_states[l-1]
 				new_alpha[p_state][s_state] +=1
 
-			print ("new mu before norm")
-			print (new_mu.astype(float))
+			#print ("new mu before norm")
+			#print (new_mu.astype(float))
 
 			l1_norm = np.linalg.norm(new_alpha, axis=1, ord=1)
-			alpha = new_alpha/l1_norm.reshape(3,1)
-			mu = new_mu/l1_norm.reshape(3,1)
-			print ("new normalized alpha")
-			print (alpha.astype(float))
-			print ("new mu")
-			print (mu.astype(float))
+			alpha = new_alpha/l1_norm.reshape(K,1)
+			mu = new_mu/l1_norm.reshape(K,1)
+			#print ("new normalized alpha")
+			#print (alpha.astype(float))
+			#print ("new mu")
+			#print (mu.astype(float))
 
-			for i in range(0, 10):
-				print("%dth y :" % i, Y[i])
 			plt.scatter(Y[:,0],Y[:,1], c=sampled_states,cmap=matplotlib.colors.ListedColormap(colors),marker='+', s=1)
 			plt.scatter(mu[:,0],mu[:,1], c=mu_class,cmap=matplotlib.colors.ListedColormap(colors), s = 100)
 
 			plt.title('%d New mu given data' % j)
 
-			plt.axis([-2, 12, -2, 12])
+			plt.axis([-2, 30, -2, 30])
 			plt.show()
 			plt.close()
 
 			prev_states = sampled_states
 			# TODO: covariance matrix 
 			# use np.cov
-		
+	
+		print ("Gibbs sampling took %d iterations. Diff: %d" % (j, diff))
+		print ("final alpha")
+		print (alpha)
+		print ("final mu")
+		print (mu)
+		return 	alpha_list, mu_list, sigma_list, sampled_states_list, j
