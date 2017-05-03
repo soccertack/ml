@@ -134,12 +134,17 @@ class TemporalModel:
 		for j in range(0, iterations):
 			#TODO: this should be loop
 
-
 			t = TemporalModel(alpha, mu, sigma)
 			# We are sampling using true alpha, not the prior we would get
 			sampled_states = t.SampleStates(Y)
 			print ("From SampleGibbsLike")
 			print (sampled_states)
+
+			if j!=0:
+				diff = np.count_nonzero(sampled_states != prev_states)
+				print ("diff: %d" % diff)
+				if diff == 0:
+					break;
 
 			for i in range(0, 10):
 				print("%dth y :" % i, Y[i])
@@ -150,7 +155,7 @@ class TemporalModel:
 			plt.scatter(Y[:,0],Y[:,1], c=sampled_states,cmap=matplotlib.colors.ListedColormap(colors),marker='+', s=10)
 			plt.scatter(mu[:,0],mu[:,1], c=mu_class,cmap=matplotlib.colors.ListedColormap(colors), s = 50)
 
-			plt.title('sampled states give mu')
+			plt.title('%d sampled states give mu' %j)
 
 			plt.axis([-2, 12, -2, 12])
 			plt.show()
@@ -163,15 +168,15 @@ class TemporalModel:
 			new_mu = np.zeros([K, 2])
 
 			T = Y.shape[0]
-			for j in range(0, T):
-				s_state = sampled_states[j]
-				print ("%dth class %d, " % (j, s_state), Y[j])
-				new_mu[s_state] += Y[j]
+			for l in range(0, T):
+				s_state = sampled_states[l]
+				#print ("%dth class %d, " % (j, s_state), Y[j])
+				new_mu[s_state] += Y[l]
 
-				if j == 0:
+				if l == 0:
 					continue
 				
-				p_state = sampled_states[j-1]
+				p_state = sampled_states[l-1]
 				new_alpha[p_state][s_state] +=1
 
 			print ("new mu before norm")
@@ -190,12 +195,13 @@ class TemporalModel:
 			plt.scatter(Y[:,0],Y[:,1], c=sampled_states,cmap=matplotlib.colors.ListedColormap(colors),marker='+', s=1)
 			plt.scatter(mu[:,0],mu[:,1], c=mu_class,cmap=matplotlib.colors.ListedColormap(colors), s = 100)
 
-			plt.title('New mu given data')
+			plt.title('%d New mu given data' % j)
 
 			plt.axis([-2, 12, -2, 12])
 			plt.show()
 			plt.close()
 
+			prev_states = sampled_states
 			# TODO: covariance matrix 
 			# use np.cov
 		
